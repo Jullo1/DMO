@@ -1,0 +1,9 @@
+#Card Images
+/Assets/Art/Cards/
+
+#Unity Cache Files
+/Library/
+/Logs/
+/obj/
+/Temp/
+/Build/
