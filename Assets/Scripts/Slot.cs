@@ -25,6 +25,19 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
         if (location == Zone.Hand) //change ui layer to bring card to front
             transform.SetAsLastSibling();
+
+        if (location == Zone.Hand && gameObject.tag == "Opponent")
+        {
+            for (int i = slotNumber; i < hand.slotList.Count; i++)
+            {
+                if (hand.slotList[i].container) //if there's a card in the next slot to the right
+                {
+                    container.GetComponentInChildren<Image>().raycastPadding = new Vector4(0, 0, 100f, 0);
+                    return;
+                }
+            }
+            container.GetComponentInChildren<Image>().raycastPadding = new Vector4(0, 0, 0, 0);
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
