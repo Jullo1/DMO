@@ -43,6 +43,7 @@ public class DuelEngine : MonoBehaviour
     public Monster[] tributes = new Monster[2];
     Monster tributeSummonCard;
     bool tributeIsSet;
+    bool initiatedTribute;
 
     AudioSource aud;
     //duel sfx
@@ -211,6 +212,12 @@ public class DuelEngine : MonoBehaviour
                 break;
             case "end":
                 aud.clip = endSound;
+                break;
+            case "cancel":
+                aud.clip = cancelSound;
+                break;
+            case "blip":
+                aud.clip = blipSound;
                 break;
         }
         aud.Play();
@@ -472,21 +479,28 @@ public class DuelEngine : MonoBehaviour
 
     public void InitiateTribute(Monster card, int tributes, bool set)
     {
+        PlaySound("blip");
+        initiatedTribute = true;
         tributeSummonCard = card;
         tributesLeft = tributes;
         tributeIsSet = set;
     }
 
-    public void CancelTribute()
+    public void CancelTribute(bool playSound = true)
     {
+        if (!initiatedTribute) return;
+        if (playSound) PlaySound("cancel");
         tributeSummonCard = null;
         tributesLeft = 0;
         for (int i = 0; i < tributes.Length; i++)
             tributes[i] = null;
+
+        initiatedTribute = false;
     }
 
     public void SelectTribute(Monster card)
     {
+        PlaySound("blip");
         tributes[tributesLeft - 1] = card;
         tributesLeft--;
         if (tributesLeft == 0)
@@ -498,7 +512,7 @@ public class DuelEngine : MonoBehaviour
             MoveCard(tributeSummonCard, Zone.Field, tributeIsSet, card.ownedByPlayer);
             if (card.ownedByPlayer) playerHand.canNormalSummon = false;
             else if (!card.ownedByPlayer) opponentHand.canNormalSummon = false;
-            CancelTribute(); //clean up for next tribute summon
+            CancelTribute(false); //clean up for next tribute summon
         }
     }
 
