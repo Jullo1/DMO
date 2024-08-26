@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Field : MonoBehaviour
@@ -7,7 +5,6 @@ public class Field : MonoBehaviour
     DuelEngine engine;
     public Slot[] monsterSlots = new Slot[5];
     public Slot[] spellTrapSlots = new Slot[5];
-
     int previousTributeSlot;
 
     void Awake()
@@ -15,8 +12,14 @@ public class Field : MonoBehaviour
         engine = FindObjectOfType<DuelEngine>();
     }
 
-    public void UseCard(int fieldIndex)
+    public void UseCard(int fieldIndex, bool activateEffect)
     {
+        if (activateEffect)
+        {
+            //card effect code here
+            return;
+        }
+
         if (engine.currentPhase == Phase.Battle)
             Attack(fieldIndex);
 
@@ -29,7 +32,11 @@ public class Field : MonoBehaviour
                 else
                     engine.CancelTribute();
             }
-            else ChangePosition(fieldIndex);
+            else
+            {
+                engine.PlaySound("send");
+                ChangePosition(fieldIndex);
+            }
         }
     }
 

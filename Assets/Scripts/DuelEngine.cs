@@ -1,11 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public enum Phase { Undefined, Draw, Standby, Main, Battle, Main2, End };
 public enum Zone { Undefined, Field, Hand, Deck, Graveyard, Banished, Fusion };
@@ -22,6 +17,8 @@ public class DuelEngine : MonoBehaviour
     Graveyard playerGraveyard;
     Banished playerBanished;
     FusionDeck playerFusionDeck;
+
+    EventSystem playerInputs;
 
     Field opponentField;
     Deck opponentDeck;
@@ -47,8 +44,31 @@ public class DuelEngine : MonoBehaviour
     Monster tributeSummonCard;
     bool tributeIsSet;
 
+    AudioSource aud;
+    //duel sfx
+    [SerializeField] AudioClip startSound;
+    [SerializeField] AudioClip endSound;
+    [SerializeField] AudioClip lpSound;
+    [SerializeField] AudioClip drawSound;
+    [SerializeField] AudioClip playSound;
+    [SerializeField] AudioClip searchSound;
+    [SerializeField] AudioClip sendSound;
+    [SerializeField] AudioClip statusSound;
+    [SerializeField] AudioClip damageSound;
+
+    //menus sfx
+    [SerializeField] AudioClip blipSound;
+    [SerializeField] AudioClip selectSound;
+    [SerializeField] AudioClip decideSound;
+    [SerializeField] AudioClip cancelSound;
+    [SerializeField] AudioClip cantSound;
+    [SerializeField] AudioClip inSound;
+
     void Awake()
     {
+        aud = GetComponent<AudioSource>();
+        playerInputs = FindAnyObjectByType<EventSystem>();
+
         //Assign field elements
         foreach (Field field in FindObjectsOfType<Field>())
         {
@@ -106,7 +126,6 @@ public class DuelEngine : MonoBehaviour
     void Start()
     {
         DuelStart();
-        NextPhase();
     }
 
     void UpdateUITexts()
@@ -117,11 +136,16 @@ public class DuelEngine : MonoBehaviour
 
     void DuelStart()
     {
-        player.ChangeLP(8000);
-        opponent.ChangeLP(8000);
+        PlaySound("start");
+        player.changeLpRoutine = StartCoroutine(player.ChangeLP(8000, true, true));
+        opponent.changeLpRoutine = StartCoroutine(opponent.ChangeLP(8000, false, false));
 
         player.DrawCard(5);
         opponent.DrawCard(5);
+    }
+    public void ToggleInputs()
+    {
+        playerInputs.enabled = !playerInputs.enabled;
     }
 
     Phase GetNextPhase()
@@ -157,16 +181,51 @@ public class DuelEngine : MonoBehaviour
         UpdateUITexts();
     }
 
+    public void PlaySound(string sound)
+    {
+        switch (sound)
+        {
+            case "start":
+                aud.clip = startSound;
+                break;
+            case "draw":
+                aud.clip = drawSound;
+                break;
+            case "play":
+                aud.clip = playSound;
+                break;
+            case "send":
+                aud.clip = sendSound;
+                break;
+            case "search":
+                aud.clip = searchSound;
+                break;
+            case "select":
+                aud.clip = selectSound;
+                break;
+            case "damage":
+                aud.clip = damageSound;
+                break;
+            case "lp":
+                aud.clip = lpSound;
+                break;
+            case "end":
+                aud.clip = endSound;
+                break;
+        }
+        aud.Play();
+    }
+
     void ExecutePhase()
     {
         switch (currentPhase)
         {
             case Phase.Draw:
+                if (playerTurn) player.DrawCard(1);
+                else opponent.DrawCard(1);
                 NextPhase();
                 break;
             case Phase.Standby:
-                if(playerTurn) player.DrawCard(1);
-                else opponent.DrawCard(1);
                 NextPhase();
                 break;
             case Phase.Main:
@@ -227,6 +286,7 @@ public class DuelEngine : MonoBehaviour
         switch (destination) //add card to destination
         {
             case Zone.Field:
+                PlaySound("play");
                 if (isPlayer)
                 {
                     if (!giveControl)
@@ -263,6 +323,7 @@ public class DuelEngine : MonoBehaviour
                 else opponentHand.AddCard(card);
                 break;
             case Zone.Deck:
+                PlaySound("send");
                 if (card.ownedByPlayer) playerDeck.AddCard(card);
                 else opponentDeck.AddCard(card);
                 break;
@@ -271,10 +332,12 @@ public class DuelEngine : MonoBehaviour
                 else opponentGraveyard.AddCard(card);
                 break;
             case Zone.Banished:
+                PlaySound("search");
                 if (card.ownedByPlayer) playerBanished.AddCard(card);
                 else opponentBanished.AddCard(card);
                 break;
             case Zone.Fusion:
+                PlaySound("send");
                 if (card.ownedByPlayer) playerFusionDeck.AddCard(card);
                 else opponentFusionDeck.AddCard(card);
                 break;
@@ -293,7 +356,8 @@ public class DuelEngine : MonoBehaviour
             Debug.Log("This card can't attack yet");
             return;
         }
-            attackCard = card;
+        PlaySound("select");
+        attackCard = card;
         if (attackCard.GetComponentInParent<Slot>().tag == "Player") //check for empty field for direct attack
         {
             foreach (Slot slot in opponentField.monsterSlots)
@@ -304,7 +368,8 @@ public class DuelEngine : MonoBehaviour
                     return;
                 }
             }
-            opponent.ChangeLP(-attackCard.atk);
+            PlaySound("damage");
+            opponent.changeLpRoutine = StartCoroutine(opponent.ChangeLP(-attackCard.atk));
             attackCard.hasBattled = true;
             attackCard = null;
         }
@@ -318,7 +383,8 @@ public class DuelEngine : MonoBehaviour
                     return;
                 }
             }
-            player.ChangeLP(-attackCard.atk);
+            PlaySound("damage");
+            player.changeLpRoutine = StartCoroutine(player.ChangeLP(-attackCard.atk));
             attackCard.hasBattled = true;
             attackCard = null;
         }
@@ -328,6 +394,7 @@ public class DuelEngine : MonoBehaviour
     {
         if (attackCard) //if attackCard is assigned, then battle will occur when selecting a valid target
         {
+            PlaySound("damage");
             if (attackCard.GetComponentInParent<Slot>().tag == "Player")
             {
                 Monster defendCard = (Monster)opponentField.monsterSlots[fieldIndex - 1].container;
@@ -335,7 +402,7 @@ public class DuelEngine : MonoBehaviour
                 {
                     if (attackCard.atk > defendCard.atk)
                     {
-                        opponent.ChangeLP(defendCard.atk - attackCard.atk);
+                        opponent.changeLpRoutine = StartCoroutine(opponent.ChangeLP(defendCard.atk - attackCard.atk));
                         MoveCard(defendCard, Zone.Graveyard, false, false, true);
                     }
                     else if (attackCard.atk == defendCard.atk)
@@ -345,7 +412,7 @@ public class DuelEngine : MonoBehaviour
                     }
                     else if (attackCard.atk < defendCard.atk)
                     {
-                        player.ChangeLP(attackCard.atk - defendCard.atk);
+                        player.changeLpRoutine = StartCoroutine(player.ChangeLP(attackCard.atk - defendCard.atk));
                         MoveCard(attackCard, Zone.Graveyard, false, true, true);
                     }
                 }
@@ -359,7 +426,7 @@ public class DuelEngine : MonoBehaviour
                     }
                     else if (attackCard.atk < defendCard.def)
                     {
-                        player.ChangeLP(attackCard.atk - defendCard.def);
+                        player.changeLpRoutine = StartCoroutine(player.ChangeLP(attackCard.atk - defendCard.def));
                     } //nothing will happen if atk value = def value
                 }
             }
@@ -370,7 +437,7 @@ public class DuelEngine : MonoBehaviour
                 {
                     if (attackCard.atk > defendCard.atk)
                     {
-                        player.ChangeLP(defendCard.atk - attackCard.atk);
+                        player.changeLpRoutine = StartCoroutine(player.ChangeLP(defendCard.atk - attackCard.atk));
                         MoveCard(defendCard, Zone.Graveyard, false, true, true);
                     }
                     else if (attackCard.atk == defendCard.atk)
@@ -380,7 +447,7 @@ public class DuelEngine : MonoBehaviour
                     }
                     else if (attackCard.atk < defendCard.atk)
                     {
-                        opponent.ChangeLP(attackCard.atk - defendCard.atk);
+                        opponent.changeLpRoutine = StartCoroutine(opponent.ChangeLP(attackCard.atk - defendCard.atk));
                         MoveCard(attackCard, Zone.Graveyard, false, false, true);
                     }
                 }
@@ -394,7 +461,7 @@ public class DuelEngine : MonoBehaviour
                     }
                     else if (attackCard.atk < defendCard.def)
                     {
-                        opponent.ChangeLP(attackCard.atk - defendCard.def);
+                        opponent.changeLpRoutine = StartCoroutine(opponent.ChangeLP(attackCard.atk - defendCard.def));
                     }
                 }
             }
@@ -438,6 +505,6 @@ public class DuelEngine : MonoBehaviour
     public void EndDuel(bool isPlayer)
     {
         Debug.Log("Game Over");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

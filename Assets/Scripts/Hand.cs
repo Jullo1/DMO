@@ -1,25 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine.SceneManagement;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Hand : Collection
 {
     public bool canNormalSummon;
 
-    public void PlayCard(int handIndex)
-    {
-        UseCard(handIndex, false);
-    }
-
-    public void SetCard(int handIndex)
-    { 
-        UseCard(handIndex, true);
-    }
-
-    void UseCard(int handIndex, bool set)
+    public void PlayCard(int handIndex, bool set)
     {
         if ((engine.playerTurn && tag == "Player") || (!engine.playerTurn && tag == "Opponent"))
         {
