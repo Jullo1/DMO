@@ -29,7 +29,8 @@ public class Monster : Card
             if ((canChangePos && (!hasBattled)) || isForced) //if is changed by engine
             {
                 isAttackPosition = isAttack;
-                if (isAttack && !isFaceUp) ToggleFaceUp(true);
+                if (isAttack && !isFaceUp) { ToggleFaceUp(true); if (!isForced) FindObjectOfType<DuelEngine>().PlaySound("play"); }
+                else if (!isForced) FindObjectOfType<DuelEngine>().PlaySound("send");
                 canChangePos = false;
                 UpdateCardRotation();
             }

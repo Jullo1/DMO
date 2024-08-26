@@ -5,7 +5,7 @@ public class Field : MonoBehaviour
     DuelEngine engine;
     public Slot[] monsterSlots = new Slot[5];
     public Slot[] spellTrapSlots = new Slot[5];
-    int previousTributeSlot;
+    public int previousTributeSlot = -1;
 
     void Awake()
     {
@@ -28,13 +28,18 @@ public class Field : MonoBehaviour
             if (engine.tributesLeft > 0)
             {
                 if (fieldIndex != previousTributeSlot)
+                {
                     engine.SelectTribute((Monster)monsterSlots[fieldIndex - 1].container);
+                    previousTributeSlot = fieldIndex;
+                }
                 else
+                {
                     engine.CancelTribute();
+                    previousTributeSlot = -1;
+                }
             }
             else
             {
-                engine.PlaySound("send");
                 ChangePosition(fieldIndex);
             }
         }
@@ -71,6 +76,7 @@ public class Field : MonoBehaviour
     {
         card.TogglePosition(!set, true);
         card.ToggleFaceUp(!set, true);
+
         if (!monsterSlots[2].container)
         {
             GameObject newCardObject = Instantiate(card.gameObject, monsterSlots[2].gameObject.transform);
@@ -96,6 +102,10 @@ public class Field : MonoBehaviour
             GameObject newCardObject = Instantiate(card.gameObject, monsterSlots[0].gameObject.transform);
             monsterSlots[0].AddCard(newCardObject.GetComponent<Monster>());
         }
+
+        previousTributeSlot = -1;
+        if (card.cardName == "Blue-Eyes White Dragon") engine.ChangeBackgroundMusic(4);
+        else if (card.cardName == "Dark Magician") engine.ChangeBackgroundMusic(3);
     }
 
     public void SetSpellTrap(Card card)

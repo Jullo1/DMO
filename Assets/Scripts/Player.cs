@@ -1,4 +1,5 @@
 using System.Collections;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,7 +38,6 @@ public class Player : MonoBehaviour
         //finish the previous routine
         if (changeLpRoutine != null)
         {
-            lpAudio.Stop();
             stopLpRoutine = true;
             yield return new WaitForSeconds(0.08f);
             stopLpRoutine = false;
@@ -83,11 +83,14 @@ public class Player : MonoBehaviour
         if (LP <= 0)
         {
             LP = 0;
-            engine.ToggleInputs();
             engine.EndDuel(tag == "Player");
         }
 
         LPnum.text = LP.ToString();
+        if (LP <= 4000)
+        {
+            engine.ChangeBackgroundMusic(1);
+        }
     }
 
     public void DrawCard(int amount)

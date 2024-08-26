@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public enum Phase { Undefined, Draw, Standby, Main, Battle, Main2, End };
 public enum Zone { Undefined, Field, Hand, Deck, Graveyard, Banished, Fusion };
@@ -17,8 +18,6 @@ public class DuelEngine : MonoBehaviour
     Graveyard playerGraveyard;
     Banished playerBanished;
     FusionDeck playerFusionDeck;
-
-    EventSystem playerInputs;
 
     Field opponentField;
     Deck opponentDeck;
@@ -64,6 +63,14 @@ public class DuelEngine : MonoBehaviour
     [SerializeField] AudioClip cancelSound;
     [SerializeField] AudioClip cantSound;
     [SerializeField] AudioClip inSound;
+
+    //soundtrack
+    [SerializeField] AudioSource backgroundMusic;
+    [SerializeField] AudioClip[] soundtrack = new AudioClip[5];
+    int currentMusicPhase = 0;
+
+    EventSystem playerInputs;
+    [SerializeField] GameObject gameOverText;
 
     void Awake()
     {
@@ -127,6 +134,19 @@ public class DuelEngine : MonoBehaviour
     void Start()
     {
         DuelStart();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)) Reset();
+    }
+
+    public void ChangeBackgroundMusic(int phase)
+    {
+        if (phase <= currentMusicPhase) return;
+        currentMusicPhase = phase;
+        backgroundMusic.clip = soundtrack[phase];
+        backgroundMusic.Play();
     }
 
     void UpdateUITexts()
@@ -282,7 +302,7 @@ public class DuelEngine : MonoBehaviour
                 NextPhase();
                 break;
         }
-        CancelTribute();//in case tribute summon was initiated, it will be cancelled when changing phase
+        CancelTribute(false);//in case tribute summon was initiated, it will be cancelled when changing phase
     }
 
     public void MoveCard(Card card, Zone destination, bool set = false, bool isPlayer = true, bool destroyed = false, bool giveControl = false)
@@ -293,7 +313,10 @@ public class DuelEngine : MonoBehaviour
         switch (destination) //add card to destination
         {
             case Zone.Field:
-                PlaySound("play");
+
+                if (set) PlaySound("send");
+                else PlaySound("play");
+
                 if (isPlayer)
                 {
                     if (!giveControl)
@@ -361,6 +384,7 @@ public class DuelEngine : MonoBehaviour
         if (card.hasBattled || !card.isAttackPosition)
         {
             Debug.Log("This card can't attack yet");
+            PlaySound("cancel");
             return;
         }
         PlaySound("select");
@@ -401,7 +425,6 @@ public class DuelEngine : MonoBehaviour
     {
         if (attackCard) //if attackCard is assigned, then battle will occur when selecting a valid target
         {
-            PlaySound("damage");
             if (attackCard.GetComponentInParent<Slot>().tag == "Player")
             {
                 Monster defendCard = (Monster)opponentField.monsterSlots[fieldIndex - 1].container;
@@ -474,6 +497,7 @@ public class DuelEngine : MonoBehaviour
             }
             attackCard.hasBattled = true;
             attackCard = null;
+            PlaySound("damage");
         }
     }
 
@@ -490,6 +514,7 @@ public class DuelEngine : MonoBehaviour
     {
         if (!initiatedTribute) return;
         if (playSound) PlaySound("cancel");
+
         tributeSummonCard = null;
         tributesLeft = 0;
         for (int i = 0; i < tributes.Length; i++)
@@ -500,6 +525,12 @@ public class DuelEngine : MonoBehaviour
 
     public void SelectTribute(Monster card)
     {
+        if ((playerTurn && !card.ownedByPlayer) || (!playerTurn && card.ownedByPlayer)) //prevent players from using enemy cards
+        {
+            CancelTribute();
+            return;
+        }
+
         PlaySound("blip");
         tributes[tributesLeft - 1] = card;
         tributesLeft--;
@@ -507,7 +538,11 @@ public class DuelEngine : MonoBehaviour
         {
             foreach (Monster monster in tributes)
             {
-                if (monster) MoveCard(monster, Zone.Graveyard, false, card.ownedByPlayer, false); //send tributes to graveyard
+                if (monster)
+                {
+                    monster.TogglePosition(true, true);
+                    MoveCard(monster, Zone.Graveyard, false, card.ownedByPlayer, false); //send tributes to graveyard
+                }
             }
             MoveCard(tributeSummonCard, Zone.Field, tributeIsSet, card.ownedByPlayer);
             if (card.ownedByPlayer) playerHand.canNormalSummon = false;
@@ -519,6 +554,12 @@ public class DuelEngine : MonoBehaviour
     public void EndDuel(bool isPlayer)
     {
         Debug.Log("Game Over");
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        gameOverText.SetActive(true);
+        //Reset();
+    }
+
+    public void Reset()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

@@ -19,7 +19,7 @@ public class Hand : Collection
                         if (monsterCard.level <= 4)
                         {
                             engine.MoveCard(selectedCard, Zone.Field, set, (tag == "Player"));
-                            engine.CancelTribute();
+                            engine.CancelTribute(false);
                             canNormalSummon = false;
                         }
                         else if (monsterCard.level <= 6)

@@ -21,7 +21,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (container)
-            if (container.isFaceUp) descriptionUI.text = container.fullCardText;
+            if (container.isFaceUp || container.ownedByPlayer) descriptionUI.text = container.fullCardText;
 
         if (location == Zone.Hand) //change ui layer to bring card to front
             transform.SetAsLastSibling();
