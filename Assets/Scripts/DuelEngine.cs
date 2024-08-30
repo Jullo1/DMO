@@ -310,6 +310,7 @@ public class DuelEngine : MonoBehaviour
                                 }
                                 if (attackTarget != -1)
                                 {
+                                    yield return new WaitForSeconds(0.5f);
                                     InitiateAttack(fieldMonster);
                                     Attack(attackTarget + 1);
                                 }
@@ -330,6 +331,7 @@ public class DuelEngine : MonoBehaviour
                             if (playerField.monsterSlots[j].container) break;
                             if (j == playerField.monsterSlots.Length - 1)
                             {
+                                yield return new WaitForSeconds(0.5f);
                                 InitiateAttack(fieldMonster);
                             }
                         }
