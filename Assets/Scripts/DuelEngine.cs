@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
+using System.Collections;
 
 public enum Phase { Undefined, Draw, Standby, Main, Battle, Main2, End };
 public enum Zone { Undefined, Field, Hand, Deck, Graveyard, Banished, Fusion };
@@ -66,8 +68,11 @@ public class DuelEngine : MonoBehaviour
 
     //soundtrack
     [SerializeField] AudioSource backgroundMusic;
-    [SerializeField] AudioClip[] soundtrack = new AudioClip[5];
+    [SerializeField] AudioClip[] soundtrack;
     int currentMusicPhase = 0;
+    float previousMusicState;
+    bool[] alreadyPlayed = new bool[10];
+    Coroutine aiMove;
 
     EventSystem playerInputs;
     [SerializeField] GameObject gameOverText;
@@ -134,16 +139,217 @@ public class DuelEngine : MonoBehaviour
     void Start()
     {
         DuelStart();
+        backgroundMusic.clip = soundtrack[0];
+        backgroundMusic.Play();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) Reset();
+
+        if (!backgroundMusic.isPlaying)
+        {
+            if (backgroundMusic.clip == soundtrack[0]) backgroundMusic.clip = soundtrack[2];
+            else
+            {
+                backgroundMusic.clip = soundtrack[0];
+                backgroundMusic.time = previousMusicState;
+            }
+            backgroundMusic.Play();
+        }
+    }
+
+    IEnumerator AIMove()
+    {
+        if (playerTurn) yield break;
+
+        yield return new WaitForSeconds(0.5f);
+
+        switch (currentPhase)
+        {
+            case Phase.Draw:
+                NextPhase();
+                break;
+            case Phase.Main:
+                if (opponentHand.slotList.Count > 0) //play a card
+                {
+                    int cardsInField = 0;
+
+                    //first check field
+                    for (int i = 0; i < opponentField.monsterSlots.Length; i++)
+                    {
+                        if (!opponentField.monsterSlots[i].container) continue;
+                        cardsInField++;
+                    }
+
+                    int cardToPlay = -1;
+                    int maxValue = 0;
+                    bool playInDef = false;
+                    int maxValueField = 0;
+                    int tributesNeeded = 0;
+                    for (int i = 0; i < opponentHand.slotList.Count; i++)
+                    {
+                        if (!opponentHand.slotList[i].container) continue;
+                        Monster handMonster = opponentHand.slotList[i].container.GetComponent<Monster>();
+
+                        //check if able to play a level 7 or higher card
+                        if (handMonster.level > 6) tributesNeeded = 2;
+                        else if (handMonster.level > 4) tributesNeeded = 1;
+                        else tributesNeeded = 0;
+
+                        if (tributesNeeded != 0)
+                        {
+                            if (cardsInField < tributesNeeded) continue;
+                            for (int j = 0; j < opponentField.monsterSlots.Length; j++)
+                            {
+                                if (!opponentField.monsterSlots[j].container) continue;
+                                Monster fieldMonster = opponentField.monsterSlots[j].container.GetComponent<Monster>();
+
+                                if (fieldMonster.atk >= maxValueField || fieldMonster.def >= maxValueField)
+                                {
+                                    maxValueField = opponentField.monsterSlots[j].container.GetComponent<Monster>().atk;
+                                    playInDef = false;
+                                    if (fieldMonster.def > maxValueField) { maxValueField = fieldMonster.def; playInDef = true; }
+                                }
+                            }
+                            if (handMonster.atk > maxValueField || handMonster.def > maxValueField)
+                            {
+                                cardToPlay = i;
+                                maxValue = handMonster.atk;
+                                playInDef = false;
+                                if (handMonster.def > maxValue) { maxValue = handMonster.def; playInDef = true; }
+                            }
+                        }
+
+                        else //if its a level 4 or lower
+                        {
+                            if (handMonster.atk >= maxValue || handMonster.def >= maxValue) //check for the strongest card
+                            {
+                                cardToPlay = i;
+                                maxValue = handMonster.atk;
+                                playInDef = false;
+                                if (handMonster.def > maxValue) { maxValue = handMonster.def; playInDef = true; }
+                            }
+                        }
+                    }
+                    if (cardToPlay != -1)
+                    {
+                        opponentHand.PlayCard(cardToPlay + 1, playInDef);
+                        if (tributesLeft > 0)
+                        {
+                            for (int i = 0; i < tributesLeft; i++)
+                            {
+                                int lowestAtk = int.MaxValue;
+                                int selectedCard = -1;
+                                for (int j = 0; j < opponentField.monsterSlots.Length; j++)
+                                {
+                                    if (!opponentField.monsterSlots[j].container || selectedCard == j) continue;
+                                    Monster fieldMonster = (Monster)opponentField.monsterSlots[j].container;
+
+                                    if (fieldMonster.atk < lowestAtk)
+                                    {
+                                        lowestAtk = fieldMonster.atk;
+                                        SelectTribute(fieldMonster);
+                                        selectedCard = j;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //SCRIPT to change into atk positions (check for def in main phase 2)
+
+                NextPhase();
+                break;
+
+            case Phase.Battle:
+                bool targetIsAttackPos = false;
+                for (int i = 0; i < opponentField.monsterSlots.Length; i++)
+                {
+                    if (!opponentField.monsterSlots[i].container) continue;
+                    Monster fieldMonster = (Monster)opponentField.monsterSlots[i].container;
+
+                    int attackTarget = -1;
+                    if (fieldMonster != null)
+                    {
+                        if (fieldMonster.isAttackPosition)
+                        {
+                            int targetPower = 0;
+                            //check for the strongest card this card can defeat
+                            for (int j = 0; j < playerField.monsterSlots.Length; j++)
+                            {
+                                if (!playerField.monsterSlots[j].container) continue;
+                                Monster playerFieldMonster = (Monster)opponentField.monsterSlots[j].container;
+
+                                if (playerFieldMonster.isAttackPosition)
+                                {
+                                    if (fieldMonster.atk > playerFieldMonster.atk)
+                                    {
+                                        if (playerFieldMonster.atk > targetPower) //change to this target if its stronger than the previous one
+                                        {
+                                            targetIsAttackPos = true;
+                                            attackTarget = j;
+                                            targetPower = playerFieldMonster.atk;
+                                            continue; //priorize cards in attack position
+                                        }
+                                    }
+                                }
+                                else  //if its in defense position
+                                {
+                                    if (targetIsAttackPos) continue; //skip this target if already have an attack position card to attack (always priorizing attack position cards)
+
+                                    if (fieldMonster.atk > playerFieldMonster.def)
+                                    {
+                                        if (playerFieldMonster.def > targetPower)
+                                        {
+                                            attackTarget = j;
+                                            targetPower = playerFieldMonster.def;
+                                        }
+                                    }
+                                }
+                                if (attackTarget != -1)
+                                {
+                                    InitiateAttack(fieldMonster);
+                                    Attack(attackTarget + 1);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < opponentField.monsterSlots.Length; i++)
+                {
+                    if (!opponentField.monsterSlots[i].container) continue;
+                    Monster fieldMonster = (Monster) opponentField.monsterSlots[i].container;
+                    if (fieldMonster.isAttackPosition && !fieldMonster.hasBattled)
+                    {
+                        //check for empty field
+                        for (int j = 0; j < playerField.monsterSlots.Length; j++)
+                        {
+                            if (playerField.monsterSlots[j].container) break;
+                            if (j == playerField.monsterSlots.Length - 1)
+                            {
+                                InitiateAttack(fieldMonster);
+                            }
+                        }
+                    }
+                }
+                NextPhase();
+                break;
+            
+            case Phase.Main2:
+                //SCRIPT to change into def positions
+                NextPhase();
+                break;
+        }
     }
 
     public void ChangeBackgroundMusic(int phase)
     {
-        if (phase <= currentMusicPhase) return;
+        if (alreadyPlayed[phase]) return;
+        alreadyPlayed[phase] = true;
+        previousMusicState = backgroundMusic.time;
         currentMusicPhase = phase;
         backgroundMusic.clip = soundtrack[phase];
         backgroundMusic.Play();
@@ -163,6 +369,7 @@ public class DuelEngine : MonoBehaviour
 
         player.DrawCard(5);
         opponent.DrawCard(5);
+        NextPhase();
     }
     public void ToggleInputs()
     {
@@ -195,7 +402,12 @@ public class DuelEngine : MonoBehaviour
         opponentTurnText.gameObject.SetActive(!playerTurn);
     }
 
-    public void NextPhase()
+    public void NextPhaseButton()
+    {
+        if (playerTurn) NextPhase();
+    }
+
+    void NextPhase()
     {
         currentPhase = GetNextPhase();
         ExecutePhase();
@@ -248,11 +460,10 @@ public class DuelEngine : MonoBehaviour
         switch (currentPhase)
         {
             case Phase.Draw:
-                if (playerTurn) player.DrawCard(1);
-                else opponent.DrawCard(1);
-                NextPhase();
                 break;
             case Phase.Standby:
+                if (playerTurn) player.DrawCard(1);
+                else opponent.DrawCard(1);
                 NextPhase();
                 break;
             case Phase.Main:
@@ -303,6 +514,7 @@ public class DuelEngine : MonoBehaviour
                 break;
         }
         CancelTribute(false);//in case tribute summon was initiated, it will be cancelled when changing phase
+        if (!playerTurn) { if(aiMove != null) StopCoroutine(aiMove); aiMove = StartCoroutine(AIMove()); }
     }
 
     public void MoveCard(Card card, Zone destination, bool set = false, bool isPlayer = true, bool destroyed = false, bool giveControl = false)
