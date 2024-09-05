@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
 using System.Collections;
 
 public enum Phase { Undefined, Draw, Standby, Main, Battle, Main2, End };
@@ -46,11 +45,8 @@ public class DuelEngine : MonoBehaviour
     bool tributeIsSet;
     bool initiatedTribute;
 
-    AudioSource aud;
+    AudioSource[] aud;
     //duel sfx
-    [SerializeField] AudioClip startSound;
-    [SerializeField] AudioClip endSound;
-    [SerializeField] AudioClip lpSound;
     [SerializeField] AudioClip drawSound;
     [SerializeField] AudioClip playSound;
     [SerializeField] AudioClip searchSound;
@@ -66,20 +62,12 @@ public class DuelEngine : MonoBehaviour
     [SerializeField] AudioClip cantSound;
     [SerializeField] AudioClip inSound;
 
-    //soundtrack
-    [SerializeField] AudioSource backgroundMusic;
-    [SerializeField] AudioClip[] soundtrack;
-    int currentMusicPhase = 0;
-    float previousMusicState;
-    bool[] alreadyPlayed = new bool[10];
-    Coroutine aiMove;
-
     EventSystem playerInputs;
     [SerializeField] GameObject gameOverText;
 
     void Awake()
     {
-        aud = GetComponent<AudioSource>();
+        aud = GetComponents<AudioSource>();
         playerInputs = FindAnyObjectByType<EventSystem>();
 
         //Assign field elements
@@ -139,37 +127,18 @@ public class DuelEngine : MonoBehaviour
     void Start()
     {
         DuelStart();
-        backgroundMusic.clip = soundtrack[0];
-        backgroundMusic.Play();
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape)) Reset();
-
-        if (!backgroundMusic.isPlaying)
-        {
-            if (backgroundMusic.clip == soundtrack[0]) backgroundMusic.clip = soundtrack[2];
-            else
-            {
-                backgroundMusic.clip = soundtrack[0];
-                backgroundMusic.time = previousMusicState;
-            }
-            backgroundMusic.Play();
-        }
     }
 
     IEnumerator AIMove()
     {
-        if (playerTurn) yield break;
-
         yield return new WaitForSeconds(0.5f);
+        if (playerTurn) yield break;
 
         switch (currentPhase)
         {
             case Phase.Draw:
                 NextPhase();
-                break;
+                yield break;
             case Phase.Main:
                 if (opponentHand.slotList.Count > 0) //play a card
                 {
@@ -235,12 +204,18 @@ public class DuelEngine : MonoBehaviour
                     if (cardToPlay != -1)
                     {
                         opponentHand.PlayCard(cardToPlay + 1, playInDef);
-                        if (tributesLeft > 0)
+
+                        int tributes = 0;
+                        Monster playMonster = (Monster)opponentHand.slotList[cardToPlay].container;
+                        if (playMonster.level > 6) tributes = 2;
+                        else if (playMonster.level > 4) tributes = 1;
+
+                        if (tributes > 0)
                         {
-                            for (int i = 0; i < tributesLeft; i++)
+                            int selectedCard = -1;
+                            for (int i = 0; i < tributes; i++)
                             {
                                 int lowestAtk = int.MaxValue;
-                                int selectedCard = -1;
                                 for (int j = 0; j < opponentField.monsterSlots.Length; j++)
                                 {
                                     if (!opponentField.monsterSlots[j].container || selectedCard == j) continue;
@@ -249,10 +224,10 @@ public class DuelEngine : MonoBehaviour
                                     if (fieldMonster.atk < lowestAtk)
                                     {
                                         lowestAtk = fieldMonster.atk;
-                                        SelectTribute(fieldMonster);
                                         selectedCard = j;
                                     }
                                 }
+                                SelectTribute((Monster)opponentField.monsterSlots[selectedCard].container);
                             }
                         }
                     }
@@ -261,7 +236,7 @@ public class DuelEngine : MonoBehaviour
                 //SCRIPT to change into atk positions (check for def in main phase 2)
 
                 NextPhase();
-                break;
+                yield break;
 
             case Phase.Battle:
                 bool targetIsAttackPos = false;
@@ -280,7 +255,7 @@ public class DuelEngine : MonoBehaviour
                             for (int j = 0; j < playerField.monsterSlots.Length; j++)
                             {
                                 if (!playerField.monsterSlots[j].container) continue;
-                                Monster playerFieldMonster = (Monster)opponentField.monsterSlots[j].container;
+                                Monster playerFieldMonster = (Monster)playerField.monsterSlots[j].container;
 
                                 if (playerFieldMonster.isAttackPosition)
                                 {
@@ -299,7 +274,11 @@ public class DuelEngine : MonoBehaviour
                                 {
                                     if (targetIsAttackPos) continue; //skip this target if already have an attack position card to attack (always priorizing attack position cards)
 
-                                    if (fieldMonster.atk > playerFieldMonster.def)
+                                    if(!playerFieldMonster.isFaceUp)
+                                    {
+                                        attackTarget = j;
+                                    }
+                                    else if (fieldMonster.atk > playerFieldMonster.def)
                                     {
                                         if (playerFieldMonster.def > targetPower)
                                         {
@@ -308,14 +287,14 @@ public class DuelEngine : MonoBehaviour
                                         }
                                     }
                                 }
-                                if (attackTarget != -1)
-                                {
-                                    yield return new WaitForSeconds(0.5f);
-                                    InitiateAttack(fieldMonster);
-                                    Attack(attackTarget + 1);
-                                }
                             }
                         }
+                    }
+                    if (attackTarget != -1)
+                    {
+                        yield return new WaitForSeconds(0.5f);
+                        InitiateAttack(fieldMonster);
+                        Attack(attackTarget + 1);
                     }
                 }
 
@@ -338,23 +317,13 @@ public class DuelEngine : MonoBehaviour
                     }
                 }
                 NextPhase();
-                break;
-            
+                yield break;
+
             case Phase.Main2:
                 //SCRIPT to change into def positions
                 NextPhase();
-                break;
+                yield break;
         }
-    }
-
-    public void ChangeBackgroundMusic(int phase)
-    {
-        if (alreadyPlayed[phase]) return;
-        alreadyPlayed[phase] = true;
-        previousMusicState = backgroundMusic.time;
-        currentMusicPhase = phase;
-        backgroundMusic.clip = soundtrack[phase];
-        backgroundMusic.Play();
     }
 
     void UpdateUITexts()
@@ -418,43 +387,44 @@ public class DuelEngine : MonoBehaviour
 
     public void PlaySound(string sound)
     {
+        //aud[0] = system, aud[1] = battle/effects, aud[2] = cards
+        int type = 0;
         switch (sound)
         {
-            case "start":
-                aud.clip = startSound;
-                break;
             case "draw":
-                aud.clip = drawSound;
+                type = 2;
+                aud[type].clip = drawSound;
                 break;
             case "play":
-                aud.clip = playSound;
+                type = 2;
+                aud[type].clip = playSound;
                 break;
             case "send":
-                aud.clip = sendSound;
+                type = 2;
+                aud[type].clip = sendSound;
                 break;
             case "search":
-                aud.clip = searchSound;
+                type = 2;
+                aud[type].clip = searchSound;
                 break;
             case "select":
-                aud.clip = selectSound;
+                type = 0;
+                aud[type].clip = selectSound;
                 break;
             case "damage":
-                aud.clip = damageSound;
-                break;
-            case "lp":
-                aud.clip = lpSound;
-                break;
-            case "end":
-                aud.clip = endSound;
+                type = 1;
+                aud[type].clip = damageSound;
                 break;
             case "cancel":
-                aud.clip = cancelSound;
+                type = 0;
+                aud[type].clip = cancelSound;
                 break;
             case "blip":
-                aud.clip = blipSound;
+                type = 0;
+                aud[type].clip = blipSound;
                 break;
         }
-        aud.Play();
+        aud[type].Play();
     }
 
     void ExecutePhase()
@@ -516,7 +486,7 @@ public class DuelEngine : MonoBehaviour
                 break;
         }
         CancelTribute(false);//in case tribute summon was initiated, it will be cancelled when changing phase
-        if (!playerTurn) { if(aiMove != null) StopCoroutine(aiMove); aiMove = StartCoroutine(AIMove()); }
+        if (!playerTurn) StartCoroutine(AIMove());
     }
 
     public void MoveCard(Card card, Zone destination, bool set = false, bool isPlayer = true, bool destroyed = false, bool giveControl = false)

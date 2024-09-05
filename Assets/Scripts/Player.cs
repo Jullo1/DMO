@@ -44,7 +44,7 @@ public class Player : MonoBehaviour
         }
 
         targetLp = LP + amount;
-        int times = 50;
+        int times = 40;
         if (lockInputs) engine.ToggleInputs();
 
         //game over
@@ -87,10 +87,10 @@ public class Player : MonoBehaviour
         }
 
         LPnum.text = LP.ToString();
-        if (LP <= 4000)
+        /*if (LP <= 4000)
         {
             engine.ChangeBackgroundMusic(1);
-        }
+        }*/
     }
 
     public void DrawCard(int amount)

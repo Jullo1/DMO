@@ -30,20 +30,23 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         {
             for (int i = slotNumber; i < hand.slotList.Count; i++)
             {
-                if (hand.slotList[i].container) //if there's a card in the next slot to the right
+                if (hand.slotList[i].container) //if there's a card in the next slot to the left
                 {
-                    container.GetComponentInChildren<Image>().raycastPadding = new Vector4(0, 0, 100f, 0);
+                    container.GetComponent<Image>().raycastPadding = new Vector4(100f, 0, 0, 0);
+                    container.transform.GetChild(0).GetComponent<Image>().raycastTarget = false; //disable cardback raycast
                     return;
                 }
             }
-            container.GetComponentInChildren<Image>().raycastPadding = new Vector4(0, 0, 0, 0);
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (location == Zone.Hand)
-            transform.SetSiblingIndex(slotNumber - 1);
+        {
+            transform.SetSiblingIndex(slotNumber - 1); //reset to original layer level
+            container.GetComponent<Image>().raycastPadding = new Vector4(0, 0, 0, 0);
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)

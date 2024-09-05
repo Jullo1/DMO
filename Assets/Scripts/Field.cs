@@ -104,8 +104,9 @@ public class Field : MonoBehaviour
         }
 
         previousTributeSlot = -1;
-        if (card.cardName == "Blue-Eyes White Dragon") engine.ChangeBackgroundMusic(4);
-        else if (card.cardName == "Dark Magician") engine.ChangeBackgroundMusic(3);
+
+        /*if (card.cardName == "Blue-Eyes White Dragon") engine.ChangeBackgroundMusic(4);
+        else if (card.cardName == "Dark Magician") engine.ChangeBackgroundMusic(3);*/
     }
 
     public void SetSpellTrap(Card card)

@@ -47,6 +47,7 @@ public class Hand : Collection
             {
                 slot.AddCard(Instantiate(card, slot.transform));
                 slot.container.ToggleFaceUp(true);
+                if (tag == "Opponent") slot.container.cardBack.SetActive(true);
                 break;
             }
     }
