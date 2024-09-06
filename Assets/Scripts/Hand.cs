@@ -24,19 +24,19 @@ public class Hand : Collection
                         }
                         else if (monsterCard.level <= 6)
                         {
-                            Debug.Log("Select 1 card to tribute");
+                            engine.AlertText("Select 1 card to tribute");
                             engine.InitiateTribute((Monster)selectedCard, 1, set);
                         }
                         else //level 7 or higher
                         {
-                            Debug.Log("Select 2 cards to tribute");
+                            engine.AlertText("Select 2 cards to tribute");
                             engine.InitiateTribute((Monster)selectedCard, 2, set);
                         }
                     }
                 }
-                else Debug.Log("Can only normal summon 1 monster per turn");
-            } else Debug.Log("You can only play monsters in your Main Phase");
-        } else Debug.Log("It's not your turn yet!");
+                else engine.AlertText("Can only normal summon 1 monster per turn", true);
+            } else engine.AlertText("You can only play monsters in your Main Phase", true);
+        } else if (tag == "Player") engine.AlertText("It's not your turn yet!", true);
     }
 
     public override void AddCard(Card card, bool shuffle = true)

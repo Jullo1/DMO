@@ -65,13 +65,15 @@ public class DuelEngine : MonoBehaviour
     [SerializeField] AudioClip inSound;
 
     EventSystem playerInputs;
-    [SerializeField] GameObject gameOverText;
+    [SerializeField] Text alertText;
+    Animator alertTextAnim;
 
     void Awake()
     {
         game = FindObjectOfType<GameManager>();
         aud = GetComponents<AudioSource>();
         playerInputs = FindAnyObjectByType<EventSystem>();
+        alertTextAnim = alertText.gameObject.GetComponent<Animator>();
 
         //Assign field elements
         foreach (Field field in FindObjectsOfType<Field>())
@@ -129,7 +131,7 @@ public class DuelEngine : MonoBehaviour
 
     void Start()
     {
-        DuelStart();
+        StartCoroutine(DuelStart());
     }
 
     IEnumerator AIMove()
@@ -335,14 +337,16 @@ public class DuelEngine : MonoBehaviour
         //nextPhaseText.text = GetNextPhase().ToString();
     }
 
-    void DuelStart()
+    IEnumerator DuelStart()
     {
+        AlertText("Duel Start", true);
         PlaySound("start");
         player.changeLpRoutine = StartCoroutine(player.ChangeLP(8000, true, true));
         opponent.changeLpRoutine = StartCoroutine(opponent.ChangeLP(8000, false, false));
 
         player.DrawCard(5);
         opponent.DrawCard(5);
+        yield return new WaitForSeconds(1.8f);
         NextPhase();
     }
     public void ToggleInputs()
@@ -435,10 +439,12 @@ public class DuelEngine : MonoBehaviour
         switch (currentPhase)
         {
             case Phase.Draw:
-                if (playerTurn && player.targetLp < 4000) game.ChangeBackgroundMusic(1); //losing music
-                else if (playerTurn && opponent.targetLp < 4000) game.ChangeBackgroundMusic(2); //losing music
+                AlertText("Draw a card");
+                if (playerTurn && player.targetLp < 4000 && player.targetLp > 0) game.ChangeBackgroundMusic(1); //losing music
+                //else if (playerTurn && opponent.targetLp < 4000 && opponent.targetLp > 0) game.ChangeBackgroundMusic(2); //winning music
                 break;
             case Phase.Standby:
+                AlertText("");
                 if (playerTurn) player.DrawCard(1);
                 else opponent.DrawCard(1);
                 NextPhase();
@@ -572,7 +578,7 @@ public class DuelEngine : MonoBehaviour
     {
         if (card.hasBattled || !card.isAttackPosition)
         {
-            Debug.Log("This card can't attack yet");
+            AlertText("This card can't attack yet", true);
             PlaySound("cancel");
             return;
         }
@@ -584,7 +590,7 @@ public class DuelEngine : MonoBehaviour
             {
                 if (slot.container)
                 {
-                    Debug.Log("Choose target");
+                    AlertText("Choose target");
                     return;
                 }
             }
@@ -599,7 +605,7 @@ public class DuelEngine : MonoBehaviour
             {
                 if (slot.container)
                 {
-                    Debug.Log("Choose target");
+                    AlertText("Choose target");
                     return;
                 }
             }
@@ -612,6 +618,7 @@ public class DuelEngine : MonoBehaviour
 
     public void Attack(int fieldIndex)
     {
+        AlertText("");
         if (attackCard) //if attackCard is assigned, then battle will occur when selecting a valid target
         {
             if (attackCard.GetComponentInParent<Slot>().tag == "Player")
@@ -702,6 +709,8 @@ public class DuelEngine : MonoBehaviour
     public void CancelTribute(bool playSound = true)
     {
         if (!initiatedTribute) return;
+
+        AlertText("");
         if (playSound) PlaySound("cancel");
 
         tributeSummonCard = null;
@@ -743,8 +752,15 @@ public class DuelEngine : MonoBehaviour
     public void EndDuel(bool isPlayer)
     {
         Debug.Log("Game Over");
-        gameOverText.SetActive(true);
-        //Reset();
+        AlertText("Press ESC to reset...");
+    }
+
+    public void AlertText(string message, bool staticMessage = false)
+    {
+        if (currentPhase == Phase.Draw && message != "Draw a card") return;
+
+        alertTextAnim.SetBool("static", staticMessage);
+        if (playerTurn) alertText.text = message;
     }
 
     public void Reset()

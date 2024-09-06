@@ -34,7 +34,7 @@ public class Monster : Card
                 canChangePos = false;
                 UpdateCardRotation();
             }
-            else Debug.Log("Can't change battle position this turn");
+            else FindObjectOfType<DuelEngine>().AlertText("Can't change battle position this turn", true);
         }
     }
 

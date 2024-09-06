@@ -69,11 +69,12 @@ public class Field : MonoBehaviour
                 Monster selectedCard = (Monster)monsterSlots[fieldIndex - 1].container;
                 selectedCard.TogglePosition(!selectedCard.isAttackPosition);
             }
-            else Debug.Log("It's not your turn yet!");
+            else FindObjectOfType<DuelEngine>().AlertText("It's not your turn yet!", true);
     }
 
     public void PlayMonster(Monster card, bool set)
     {
+        FindObjectOfType<DuelEngine>().AlertText("");
         card.TogglePosition(!set, true);
         card.ToggleFaceUp(!set, true);
 
