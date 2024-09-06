@@ -1349,7 +1349,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4eac6cbf9e525242bed8fc6eab6fcb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LP: 0
   LPnum: {fileID: 711647660}
+  targetLp: 0
   endSound: {fileID: 8300000, guid: 66c4b7259536bb94881e14662ec47dd8, type: 3}
 --- !u!1 &122138165
 GameObject:
@@ -4748,7 +4750,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4eac6cbf9e525242bed8fc6eab6fcb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LP: 0
   LPnum: {fileID: 1526131535}
+  targetLp: 0
   endSound: {fileID: 8300000, guid: 66c4b7259536bb94881e14662ec47dd8, type: 3}
 --- !u!1 &570599679
 GameObject:
@@ -16861,6 +16865,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 976a3c95b460d8d44a440a8c5ceceab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackStarts:
+  - {fileID: 8300000, guid: 898c634c797198a46be5a3bd1de8ec17, type: 3}
+  - {fileID: 8300000, guid: ff5a27897c598704d875318baa252f9e, type: 3}
+  - {fileID: 8300000, guid: 494bd20ed99113349b9732c8d5260a68, type: 3}
+  trackLoops:
+  - {fileID: 8300000, guid: b86c770aa82e3b44aae9fbd4f1287ee5, type: 3}
+  - {fileID: 8300000, guid: 14bf62124dc742f4b9eea842e46edf2c, type: 3}
+  - {fileID: 8300000, guid: 55b6a5bf7c903da4d8436d65b8b72c88, type: 3}
 --- !u!82 &1756371379
 AudioSource:
   m_ObjectHideFlags: 0
@@ -16871,8 +16883,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 898c634c797198a46be5a3bd1de8ec17, type: 3}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
@@ -16967,7 +16979,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b86c770aa82e3b44aae9fbd4f1287ee5, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1

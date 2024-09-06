@@ -10,6 +10,8 @@ public enum SummonCondition { Normal, Special, Fusion, Ritual };
 
 public class DuelEngine : MonoBehaviour
 {
+    GameManager game;
+
     Player player;
     Player opponent;
 
@@ -67,6 +69,7 @@ public class DuelEngine : MonoBehaviour
 
     void Awake()
     {
+        game = FindObjectOfType<GameManager>();
         aud = GetComponents<AudioSource>();
         playerInputs = FindAnyObjectByType<EventSystem>();
 
@@ -432,6 +435,8 @@ public class DuelEngine : MonoBehaviour
         switch (currentPhase)
         {
             case Phase.Draw:
+                if (playerTurn && player.targetLp < 4000) game.ChangeBackgroundMusic(1); //losing music
+                else if (playerTurn && opponent.targetLp < 4000) game.ChangeBackgroundMusic(2); //losing music
                 break;
             case Phase.Standby:
                 if (playerTurn) player.DrawCard(1);

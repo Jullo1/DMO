@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,10 +8,9 @@ public class GameManager : MonoBehaviour
 
     //soundtrack
     AudioSource[] backgroundMusic;
-    /* [SerializeField] AudioClip[] soundtrack;
-    int currentMusicPhase = 0;
-    float previousMusicState;
-    bool[] alreadyPlayed = new bool[10];*/
+    [SerializeField] AudioClip[] trackStarts;
+    [SerializeField] AudioClip[] trackLoops;
+    int currentTrack = -1;
     bool audioFixGl;
 
     void Awake()
@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        ChangeBackgroundMusic(0);
         if (Application.platform != RuntimePlatform.WebGLPlayer) backgroundMusic[1].PlayDelayed(backgroundMusic[0].clip.length);
     }
 
@@ -36,14 +37,17 @@ public class GameManager : MonoBehaviour
             }
     }
 
-    /*public void ChangeBackgroundMusic(int phase)
+    public void ChangeBackgroundMusic(int phase)
     {
-        if (alreadyPlayed[phase] || phase < currentMusicPhase) return;
-        alreadyPlayed[phase] = true;
-        previousMusicState = backgroundMusic.time;
-        currentMusicPhase = phase;
-        backgroundMusic.clip = soundtrack[phase];
-        backgroundMusic.Play();
-    }*/
+        if (phase == currentTrack) return;
+        currentTrack = phase;
+
+        backgroundMusic[0].clip = trackStarts[phase];
+        backgroundMusic[1].clip = trackLoops[phase];
+
+        backgroundMusic[0].Play();
+        if (Application.platform != RuntimePlatform.WebGLPlayer) backgroundMusic[1].PlayDelayed(backgroundMusic[0].clip.length);
+        else audioFixGl = false;
+    }
 
 }

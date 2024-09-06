@@ -1,5 +1,4 @@
 using System.Collections;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,18 +9,18 @@ public class Player : MonoBehaviour
     Deck deck;
     Hand hand;
 
-    int LP;
+    public int LP;
     public Text LPnum;
 
     AudioSource lpAudio;
     public Coroutine changeLpRoutine;
-    int targetLp;
+    public int targetLp; //lp that the player will have after animation (the real value)
     bool stopLpRoutine = false;
     [SerializeField] AudioClip endSound;
 
     void Awake()
     {
-        engine = FindObjectOfType<DuelEngine>().GetComponent<DuelEngine>();
+        engine = FindObjectOfType<DuelEngine>();
         lpAudio = GetComponentInChildren<AudioSource>();
 
         foreach (Hand hand in FindObjectsOfType<Hand>())
@@ -87,10 +86,6 @@ public class Player : MonoBehaviour
         }
 
         LPnum.text = LP.ToString();
-        /*if (LP <= 4000)
-        {
-            engine.ChangeBackgroundMusic(1);
-        }*/
     }
 
     public void DrawCard(int amount)
