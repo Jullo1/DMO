@@ -145,7 +145,7 @@ public class DuelEngine : MonoBehaviour
                 NextPhase();
                 yield break;
             case Phase.Main:
-                if (opponentHand.slotList.Count > 0) //play a card
+                if (opponentHand.cardList.Count > 0) //play a card
                 {
                     int cardsInField = 0;
 
@@ -161,10 +161,10 @@ public class DuelEngine : MonoBehaviour
                     bool playInDef = false;
                     int maxValueField = 0;
                     int tributesNeeded = 0;
-                    for (int i = 0; i < opponentHand.slotList.Count; i++)
+                    for (int i = 0; i < opponentHand.cardList.Count; i++)
                     {
-                        if (!opponentHand.slotList[i].container) continue;
-                        Monster handMonster = opponentHand.slotList[i].container.GetComponent<Monster>();
+                        if (!opponentHand.cardList[i]) continue;
+                        Monster handMonster = opponentHand.cardList[i].GetComponent<Monster>();
 
                         //check if able to play a level 7 or higher card
                         if (handMonster.level > 6) tributesNeeded = 2;
@@ -208,10 +208,10 @@ public class DuelEngine : MonoBehaviour
                     }
                     if (cardToPlay != -1)
                     {
-                        opponentHand.PlayCard(cardToPlay + 1, playInDef);
+                        Monster playMonster = (Monster)opponentHand.cardList[cardToPlay];
+                        opponentHand.PlayCard(cardToPlay, playInDef);
 
                         int tributes = 0;
-                        Monster playMonster = (Monster)opponentHand.slotList[cardToPlay].container;
                         if (playMonster.level > 6) tributes = 2;
                         else if (playMonster.level > 4) tributes = 1;
 
@@ -239,7 +239,7 @@ public class DuelEngine : MonoBehaviour
                 }
 
                 //SCRIPT to change into atk positions (check for def in main phase 2)
-
+                
                 NextPhase();
                 yield break;
 
@@ -344,9 +344,10 @@ public class DuelEngine : MonoBehaviour
         player.changeLpRoutine = StartCoroutine(player.ChangeLP(8000, true, true));
         opponent.changeLpRoutine = StartCoroutine(opponent.ChangeLP(8000, false, false));
 
+        yield return new WaitForSeconds(0.1f);
         player.DrawCard(5);
         opponent.DrawCard(5);
-        yield return new WaitForSeconds(1.8f);
+        yield return new WaitForSeconds(1.7f);
         NextPhase();
     }
     public void ToggleInputs()
@@ -502,29 +503,29 @@ public class DuelEngine : MonoBehaviour
 
     public void MoveCard(Card card, Zone destination, bool set = false, bool isPlayer = true, bool destroyed = false, bool giveControl = false)
     {
-        Slot slot = card.gameObject.GetComponentInParent<Slot>();
-        Zone previousLocation = slot.location;
-
         switch (destination) //add card to destination
         {
             case Zone.Field:
-
-                if (set) PlaySound("send");
-                else PlaySound("play");
-
+                
                 if (isPlayer)
                 {
                     if (!giveControl)
                     {
                         if (!playerField.CheckFull(card))
+                        {
                             playerField.PlayMonster((Monster)card, set);
-                        else return; //end function, so that it doesn't remove card
+                            playerHand.canNormalSummon = false;
+                        }
+                        else AlertText("Field is full!", true);
                     }
                     else if (giveControl)
                     {
                         if (!opponentField.CheckFull(card))
+                        {
                             opponentField.PlayMonster((Monster)card, set);
-                        else return;
+                            opponentHand.canNormalSummon = false;
+                        }
+                        else AlertText("Field is full!", true);
                     }
                 }
                 else if (!isPlayer)
@@ -533,13 +534,13 @@ public class DuelEngine : MonoBehaviour
                     {
                         if (!opponentField.CheckFull(card))
                             opponentField.PlayMonster((Monster)card, set);
-                        else return;
+                        else AlertText("Field is full!", true);
                     }
                     else if (giveControl)
                     {
                         if (!playerField.CheckFull(card))
                             playerField.PlayMonster((Monster)card, set);
-                        else return;
+                        else AlertText("Field is full!", true);
                     }
                 }
                 break;
@@ -567,11 +568,6 @@ public class DuelEngine : MonoBehaviour
                 else opponentFusionDeck.AddCard(card);
                 break;
         }
-
-        if (previousLocation == Zone.Deck) card.GetComponentInParent<Deck>().count--;
-        else if (previousLocation == Zone.Graveyard) card.GetComponentInParent<Graveyard>().count--;
-        else if (previousLocation == Zone.Hand) card.GetComponentInParent<Hand>().count--;
-        slot.RemoveCard(); //remove card from previous location
     }
 
     public void InitiateAttack(Monster card)

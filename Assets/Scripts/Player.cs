@@ -90,13 +90,22 @@ public class Player : MonoBehaviour
 
     public void DrawCard(int amount)
     {
-        engine.PlaySound("draw");
-        if (deck.count == 0)
+        if (deck.cardList.Count == 0)
         {
             engine.EndDuel(tag == "Player"); //ran out of cards, check if it's the player and end duel
             return;
         }
+        StartCoroutine(DrawDelay(amount));
+            
+    }
+
+    IEnumerator DrawDelay(int amount)
+    {
         for (int i = 0; i < amount; i++)
-            engine.MoveCard(deck.slotList[deck.count-1].container, Zone.Hand);
+        {
+            engine.MoveCard(deck.cardList[deck.cardList.Count - 1], Zone.Hand);
+            engine.PlaySound("draw");
+            yield return new WaitForSeconds(0.2f);
+        }
     }
 }

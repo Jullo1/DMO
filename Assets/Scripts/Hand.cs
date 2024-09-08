@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class Hand : Collection
+public class Hand : Collection, IPointerClickHandler
 {
     public bool canNormalSummon;
 
@@ -12,7 +13,7 @@ public class Hand : Collection
             {
                 if (canNormalSummon)
                 {
-                    Card selectedCard = slotList[handIndex - 1].container;
+                    Card selectedCard = cardList[handIndex];
                     if (selectedCard is Monster)
                     {
                         Monster monsterCard = (Monster)selectedCard;
@@ -20,7 +21,6 @@ public class Hand : Collection
                         {
                             engine.MoveCard(selectedCard, Zone.Field, set, (tag == "Player"));
                             engine.CancelTribute(false);
-                            canNormalSummon = false;
                         }
                         else if (monsterCard.level <= 6)
                         {
@@ -39,16 +39,28 @@ public class Hand : Collection
         } else if (tag == "Player") engine.AlertText("It's not your turn yet!", true);
     }
 
-    public override void AddCard(Card card, bool shuffle = true)
+    public override void AddCard(Card card)
     {
-        count++;
-        foreach (Slot slot in slotList)
-            if (!slot.container)
-            {
-                slot.AddCard(Instantiate(card, slot.transform));
-                slot.container.ToggleFaceUp(true);
-                if (tag == "Opponent") slot.container.cardBack.SetActive(true);
-                break;
-            }
+        card.ToggleFaceUp(tag != "Opponent"); //opponent cards are face down
+        base.AddCard(card);
+        RearrangeCards();
+    }
+
+    public override void RemoveCard(Card card)
+    {
+        base.RemoveCard(card);
+        RearrangeCards();
+    }
+
+    void RearrangeCards()
+    {
+        for (int i = 0; i < cardList.Count; i++)
+            cardList[i].gameObject.transform.localPosition = new Vector3((i - ((float)cardList.Count / 2)) * 50, cardList[i].gameObject.transform.position.y, 0);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Card selectedCard = eventData.pointerCurrentRaycast.gameObject.GetComponent<Card>();
+        PlayCard(selectedCard.index, eventData.button == PointerEventData.InputButton.Right); //right click = set
     }
 }

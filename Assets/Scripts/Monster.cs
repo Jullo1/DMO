@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class Monster : Card
 {
     public int atk;
@@ -17,30 +16,26 @@ public class Monster : Card
         if (!isFaceUp) //fix starting rotation if it's a monster that was set
         {
             transform.Rotate(0, 0, 90);
-            startingRotation = transform.rotation;
             transform.Rotate(0, 0, -90);
         }
     }
 
     public void TogglePosition(bool isAttack, bool isForced = false)
     {
-        if (GetComponentInParent<Slot>().location == Zone.Field || isForced)
+        if ((canChangePos && (!hasBattled)) || isForced) //if is changed by engine
         {
-            if ((canChangePos && (!hasBattled)) || isForced) //if is changed by engine
-            {
-                isAttackPosition = isAttack;
-                if (isAttack && !isFaceUp) { ToggleFaceUp(true); if (!isForced) FindObjectOfType<DuelEngine>().PlaySound("play"); }
-                else if (!isForced) FindObjectOfType<DuelEngine>().PlaySound("send");
-                canChangePos = false;
-                UpdateCardRotation();
-            }
-            else FindObjectOfType<DuelEngine>().AlertText("Can't change battle position this turn", true);
+            isAttackPosition = isAttack;
+            if (isAttack && !isFaceUp) { ToggleFaceUp(true); if (!isForced) FindObjectOfType<DuelEngine>().PlaySound("play"); }
+            else if (!isForced) FindObjectOfType<DuelEngine>().PlaySound("send");
+            canChangePos = false;
+            UpdateCardRotation();
         }
+        else if (ownedByPlayer) FindObjectOfType<DuelEngine>().AlertText("Can't change battle position this turn", true);
     }
 
     void UpdateCardRotation()
     {
-        if (isAttackPosition) transform.rotation = startingRotation;
+        if (isAttackPosition) transform.localRotation = Quaternion.identity;
         else transform.Rotate(0, 0, -90);
     }
 }

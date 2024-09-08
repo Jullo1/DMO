@@ -3,35 +3,44 @@ using UnityEngine;
 
 public class Collection : MonoBehaviour
 {
-    public int count;
+    protected GameManager game;
     protected DuelEngine engine;
-    public List<Slot> slotList = new List<Slot>();
+    public List<Card> cardList = new List<Card>();
 
     protected virtual void Awake()
     {
         engine = FindObjectOfType<DuelEngine>();
+        game = FindObjectOfType<GameManager>();
     }
 
-    public virtual void AddCard(Card card, bool shuffle = false)
+    public virtual void AddCard(Card card)
     {
-        foreach (Slot slot in slotList)
-            if (!slot.container)
-            {
-                slot.AddCard(Instantiate(card, slot.transform));
-                slot.container.ToggleFaceUp(false);
-                break;
-            }
+        if (card.index != -1) card.GetComponentInParent<Collection>().RemoveCard(card); //remove card from list if it's in a collection (not in field slot)
+        else card.GetComponentInParent<Slot>().RemoveCard();
+
+        card.transform.SetParent(transform);
+        card.transform.position = transform.position;
+        card.transform.rotation = transform.rotation;
+        cardList.Add(card);
+        card.index = cardList.Count - 1;
+        card.gameObject.transform.SetAsLastSibling();
     }
 
-    public void SwapCard(Slot slot1, Slot slot2)
+    public void SwapCard(int index1, int index2)
     {
-        Card card1 = Instantiate(slot1.container, slot2.gameObject.transform);
-        Card card2 = Instantiate(slot2.container, slot1.gameObject.transform);
+        cardList.Add(cardList[index1]);
 
-        Destroy(slot1.container.gameObject);
-        Destroy(slot2.container.gameObject);
+        cardList[index1] = cardList[index2];
+        cardList[index2] = cardList[cardList.Count-1];
 
-        slot1.container = card2;
-        slot2.container = card1;
+        cardList.RemoveAt(cardList.Count - 1);
+    }
+    
+    public virtual void RemoveCard(Card card)
+    {
+        cardList.Remove(card); //remove card from the card list to keep track of collection
+
+        for (int i = 0; i < cardList.Count; i++)
+            cardList[i].index = i; //update index for all other cards
     }
 }

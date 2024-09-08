@@ -69,42 +69,40 @@ public class Field : MonoBehaviour
                 Monster selectedCard = (Monster)monsterSlots[fieldIndex - 1].container;
                 selectedCard.TogglePosition(!selectedCard.isAttackPosition);
             }
-            else FindObjectOfType<DuelEngine>().AlertText("It's not your turn yet!", true);
+            else if (tag == "Player") FindObjectOfType<DuelEngine>().AlertText("It's not your turn yet!", true);
     }
 
     public void PlayMonster(Monster card, bool set)
     {
         FindObjectOfType<DuelEngine>().AlertText("");
-        card.TogglePosition(!set, true);
-        card.ToggleFaceUp(!set, true);
+        previousTributeSlot = -1;
 
         if (!monsterSlots[2].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, monsterSlots[2].gameObject.transform);
-            monsterSlots[2].AddCard(newCardObject.GetComponent<Monster>());
+            monsterSlots[2].AddCard(card);
         }
         else if (!monsterSlots[3].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, monsterSlots[3].gameObject.transform);
-            monsterSlots[3].AddCard(newCardObject.GetComponent<Monster>());
+            monsterSlots[3].AddCard(card);
         }
         else if (!monsterSlots[1].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, monsterSlots[1].gameObject.transform);
-            monsterSlots[1].AddCard(newCardObject.GetComponent<Monster>());
+            monsterSlots[1].AddCard(card);
         }
         else if (!monsterSlots[4].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, monsterSlots[4].gameObject.transform);
-            monsterSlots[4].AddCard(newCardObject.GetComponent<Monster>());
+            monsterSlots[4].AddCard(card);
         }
         else if (!monsterSlots[0].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, monsterSlots[0].gameObject.transform);
-            monsterSlots[0].AddCard(newCardObject.GetComponent<Monster>());
+            monsterSlots[0].AddCard(card);
         }
+        card.TogglePosition(!set, true);
+        card.ToggleFaceUp(!set);
+        card.index = -1;
 
-        previousTributeSlot = -1;
+        if (set) engine.PlaySound("send");
+        else engine.PlaySound("play");
 
         /*if (card.cardName == "Blue-Eyes White Dragon") engine.ChangeBackgroundMusic(4);
         else if (card.cardName == "Dark Magician") engine.ChangeBackgroundMusic(3);*/
@@ -112,6 +110,8 @@ public class Field : MonoBehaviour
 
     public void SetSpellTrap(Card card)
     {
+        card.index = -1;
+
         if (!spellTrapSlots[2].container)
         {
             GameObject newCardObject = Instantiate(card.gameObject, spellTrapSlots[2].gameObject.transform);

@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     DuelEngine engine;
+    Text textUI;
 
     //soundtrack
     AudioSource[] backgroundMusic;
@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     {
         backgroundMusic = GetComponents<AudioSource>();
         engine = FindObjectOfType<DuelEngine>();
+        textUI = GameObject.FindGameObjectWithTag("CardTextUI").gameObject.GetComponent<Text>();
     }
 
     void Start()
@@ -48,6 +49,11 @@ public class GameManager : MonoBehaviour
         backgroundMusic[0].Play();
         if (Application.platform != RuntimePlatform.WebGLPlayer) backgroundMusic[1].PlayDelayed(backgroundMusic[0].clip.length);
         else audioFixGl = false;
+    }
+
+    public void ChangeTextUI(string text)
+    {
+        textUI.text = text;
     }
 
 }
