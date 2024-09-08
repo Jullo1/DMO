@@ -1,5 +1,5 @@
 # DMO
-Duel Monsters Online, an attempt to modernize oldschool Yu-Gi-Oh! in Unity
+Duel Monsters Online, oldschool style Yu-Gi-Oh! in Unity
 
-Quick preview of the game here:
+Quick preview of the game:
 https://julianlerej.com/DM
