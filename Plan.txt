@@ -1,0 +1,35 @@
+Features
+-Equip spells
+-Graveyard/fusion deck shows all the cards on hover, arranged from left to right, similar to hand script. Return the cards to the original position when the mouse moves away.
+-Consider making banished cards disappear completely instead of making a second graveyard.
+-Normal spells
+-Field spells
+-Continuous spells
+
+-Change phase/turn feedback
+-Board and UI graphic designs
+-Attack animation
+
+-Normal/counter traps
+-Continuous traps
+-Quick spells
+
+
+Bugs
+-AI glitching player's LP
+-AI not properly playing some cards
+-AI skipping player's draw phase and playing the cancel sound
+
+
+Functionality
+-Battle Phase and Main Phase 2 should be skipped if no attacking monsters or first turn (next phase button shows end turn instead)
+-Right click in the turn button ends the turn
+-Show attack and defence info in a different box than the card text
+-Also show attack and defence next to the card in the field
+-Show number of cards in deck on hover
+-Create card prefab to manually remove raycast from cardback, then remove the line in Card.cs where it sets the cardback raycast to disabled
+
+
+Dev Tweaks
+-Replace the switch in PlaySound() with a dictionary
+-Make a parent card prefab that can quickly modify all cards
