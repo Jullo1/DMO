@@ -506,12 +506,21 @@ public class DuelEngine : MonoBehaviour
         switch (destination) //add card to destination
         {
             case Zone.Field:
-                
+                if (card.GetType() == typeof(SpellTrap))
+                {
+                    if (!playerField.CheckFull(card, false))
+                    {
+                        playerField.PlaySpellTrap((SpellTrap)card, set);
+                    }
+                    else AlertText("Field is full!", true);
+                    break;
+                }
+
                 if (isPlayer)
                 {
                     if (!giveControl)
                     {
-                        if (!playerField.CheckFull(card))
+                        if (!playerField.CheckFull(card, true))
                         {
                             playerField.PlayMonster((Monster)card, set);
                             playerHand.canNormalSummon = false;
@@ -520,7 +529,7 @@ public class DuelEngine : MonoBehaviour
                     }
                     else if (giveControl)
                     {
-                        if (!opponentField.CheckFull(card))
+                        if (!playerField.CheckFull(card, true))
                         {
                             opponentField.PlayMonster((Monster)card, set);
                             opponentHand.canNormalSummon = false;
@@ -532,13 +541,13 @@ public class DuelEngine : MonoBehaviour
                 {
                     if (!giveControl)
                     {
-                        if (!opponentField.CheckFull(card))
+                        if (!opponentField.CheckFull(card, true))
                             opponentField.PlayMonster((Monster)card, set);
                         else AlertText("Field is full!", true);
                     }
                     else if (giveControl)
                     {
-                        if (!playerField.CheckFull(card))
+                        if (!playerField.CheckFull(card, true))
                             playerField.PlayMonster((Monster)card, set);
                         else AlertText("Field is full!", true);
                     }

@@ -1,4 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
+
+public enum MonsterType { Dark, Light };
+
 public class Monster : Card
 {
     public int atk;
@@ -8,6 +12,9 @@ public class Monster : Card
     public bool isAttackPosition;
     public bool canChangePos;
     public bool hasBattled;
+    public MonsterType type;
+
+    public List<Card> equips = new List<Card>();
 
     void Start()
     {

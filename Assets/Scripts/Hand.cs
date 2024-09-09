@@ -3,17 +3,35 @@ using UnityEngine.EventSystems;
 
 public class Hand : Collection, IPointerClickHandler
 {
+    [SerializeField] Field field;
     public bool canNormalSummon;
 
     public void PlayCard(int handIndex, bool set)
     {
+        Card selectedCard = cardList[handIndex];
+
+        if (selectedCard.GetComponent<SpellTrap>())
+        {
+            SpellTrap selectedSpellTrap = selectedCard as SpellTrap;
+            if (!set)
+            {
+                if (CheckEquipTarget(selectedSpellTrap))
+                {
+                    engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
+                    /*ChooseTarget();
+                    selectedCard.GetComponent<SpellTrap>().TriggerEffects(true);*/
+                }
+            } else engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
+
+            return;
+        }
+
         if ((engine.playerTurn && tag == "Player") || (!engine.playerTurn && tag == "Opponent"))
         {
             if (engine.currentPhase == Phase.Main || engine.currentPhase == Phase.Main2)
             {
                 if (canNormalSummon)
                 {
-                    Card selectedCard = cardList[handIndex];
                     if (selectedCard is Monster)
                     {
                         Monster monsterCard = (Monster)selectedCard;
@@ -62,5 +80,38 @@ public class Hand : Collection, IPointerClickHandler
     {
         Card selectedCard = eventData.pointerCurrentRaycast.gameObject.GetComponent<Card>();
         PlayCard(selectedCard.index, eventData.button == PointerEventData.InputButton.Right); //right click = set
+    }
+
+    public bool CheckEquipTarget(SpellTrap card)
+    {
+        bool targetAvailable = false;
+        foreach (Slot slots in field.monsterSlots)
+        {
+            if (!slots.container) continue;
+            Monster monster = slots.container.GetComponent<Monster>();
+            if (monster.type == card.requiredType) targetAvailable = true;
+        }
+
+        if (!targetAvailable) engine.AlertText("No valid target", true);
+        return targetAvailable;
+    }
+
+    void ChooseTarget()
+    {
+        engine.AlertText("Choose a target");
+
+        /*switch (card.GetType())
+        {
+            case (istypeof(EquipSpell)):
+                EquipSpell equip = (EquipSpell)card;
+                playerField.selectedMonsterSlot = -1;
+                do
+                {
+                    if (playerField.selectedMonsterSlot == -1) continue;
+                    equip.target = (Monster)playerField.monsterSlots[playerField.selectedMonsterSlot].container;
+                } while (target.type != equip.requiredType);
+                equip.TriggerEffects(true);
+                break;
+        }*/
     }
 }

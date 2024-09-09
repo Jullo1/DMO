@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 6770991035200896212}
   - component: {fileID: 7127682012934935066}
   - component: {fileID: 5765102316319859694}
+  - component: {fileID: 5625612597717158083}
   m_Layer: 5
   m_Name: 40
   m_TagString: Card
@@ -172,6 +173,13 @@ MonoBehaviour:
   isFaceUp: 0
   cardBack: {fileID: 4297943177549355468}
   fullCardText: 
+  index: -1
+  usesTarget: 0
+  target: {fileID: 0}
+  spellType: 2
+  trapType: 0
+  requiredType: 0
+  boostValue: 0000000000000000
 --- !u!82 &5765102316319859694
 AudioSource:
   m_ObjectHideFlags: 0
@@ -268,3 +276,29 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5625612597717158083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7810839426441826599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9be19d75b2990124fb2b10fd91426b97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardName: Legendary Sword
+  cardText: A Warrior-Type monster equipped with this card increases its ATK and
+    DEF by 300 points.
+  ownedByPlayer: 0
+  isFaceUp: 0
+  cardBack: {fileID: 4297943177549355468}
+  fullCardText: 
+  index: -1
+  usesTarget: 0
+  target: {fileID: 0}
+  spellType: 0
+  trapType: 0
+  requiredType: 0
+  boostValue: 0000000000000000

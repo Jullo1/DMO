@@ -399,6 +399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardList: []
+  field: {fileID: 1460615522}
   canNormalSummon: 0
 --- !u!1 &113111067
 GameObject:
@@ -5701,8 +5702,6 @@ MonoBehaviour:
   - {fileID: 9074798410942646920, guid: f77d85a691a23c44eb02ec795ed45445, type: 3}
   - {fileID: 9074798410942646920, guid: 0b14aea5dac2e8d49857753b00bbaca5, type: 3}
   - {fileID: 9074798410942646920, guid: 0b14aea5dac2e8d49857753b00bbaca5, type: 3}
-  - {fileID: 9074798410942646920, guid: 0b14aea5dac2e8d49857753b00bbaca5, type: 3}
-  - {fileID: 9074798410942646920, guid: 4fdd30a71fb4d6f418a8d2a09b58ed6e, type: 3}
   - {fileID: 9074798410942646920, guid: a0f2baf5b1998264cb24217fd7bbdab8, type: 3}
   - {fileID: 9074798410942646920, guid: a0f2baf5b1998264cb24217fd7bbdab8, type: 3}
   - {fileID: 9074798410942646920, guid: 5c11bc217f0588740bded5fe05dc87dc, type: 3}
@@ -5713,7 +5712,6 @@ MonoBehaviour:
   - {fileID: 9074798410942646920, guid: a98012483859dc34abe0d39131d5d327, type: 3}
   - {fileID: 9074798410942646920, guid: a015d0dc3ebef514daecbc0e3f632745, type: 3}
   - {fileID: 9074798410942646920, guid: 7298fd3d51728ce4e8079478e492515f, type: 3}
-  - {fileID: 9074798410942646920, guid: 6573c597b2629a847ace41f426836add, type: 3}
   - {fileID: 9074798410942646920, guid: edcdf06fb212dea4e98f873c22aeb314, type: 3}
   - {fileID: 9074798410942646920, guid: f1019a452b55bfe4593dd2af4ae693cd, type: 3}
   - {fileID: 9074798410942646920, guid: 1c61c1af391028d4dad9679aeeeb54ac, type: 3}
@@ -5726,7 +5724,6 @@ MonoBehaviour:
   - {fileID: 9074798410942646920, guid: caae022e0906be549814ae7650652705, type: 3}
   - {fileID: 9074798410942646920, guid: caae022e0906be549814ae7650652705, type: 3}
   - {fileID: 9074798410942646920, guid: 35ef3672aac13bc4bb070caa664914da, type: 3}
-  - {fileID: 9074798410942646920, guid: 812b6d0fe3804f64394f0731828870bf, type: 3}
   - {fileID: 9074798410942646920, guid: 7850e6c7d3753d94e8e48fc37749699b, type: 3}
   - {fileID: 9074798410942646920, guid: 0cad8531335cf7545b5c5e8d95d5ac5e, type: 3}
   - {fileID: 9074798410942646920, guid: 1954b6e63d18b9d4690d8c9ab537acd8, type: 3}
@@ -5735,6 +5732,10 @@ MonoBehaviour:
   - {fileID: 9074798410942646920, guid: eea4d034c9754f84d930ad98b286951b, type: 3}
   - {fileID: 9074798410942646920, guid: eea4d034c9754f84d930ad98b286951b, type: 3}
   - {fileID: 9074798410942646920, guid: eea4d034c9754f84d930ad98b286951b, type: 3}
+  - {fileID: 7127682012934935066, guid: 950bbbdc10a1ab64c997e6ec0a984c8d, type: 3}
+  - {fileID: 7127682012934935066, guid: 950bbbdc10a1ab64c997e6ec0a984c8d, type: 3}
+  - {fileID: 7127682012934935066, guid: 950bbbdc10a1ab64c997e6ec0a984c8d, type: 3}
+  - {fileID: 7127682012934935066, guid: 950bbbdc10a1ab64c997e6ec0a984c8d, type: 3}
 --- !u!114 &1271681191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7678,6 +7679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardList: []
+  field: {fileID: 1879455206}
   canNormalSummon: 0
 --- !u!1 &2057639002
 GameObject:

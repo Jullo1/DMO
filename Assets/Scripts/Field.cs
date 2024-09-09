@@ -108,49 +108,61 @@ public class Field : MonoBehaviour
         else if (card.cardName == "Dark Magician") engine.ChangeBackgroundMusic(3);*/
     }
 
-    public void SetSpellTrap(Card card)
+    public void PlaySpellTrap(Card card, bool set)
     {
         card.index = -1;
 
         if (!spellTrapSlots[2].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, spellTrapSlots[2].gameObject.transform);
-            spellTrapSlots[2].AddCard(newCardObject.GetComponent<Monster>());
+            spellTrapSlots[2].AddCard(card);
         }
         else if (!spellTrapSlots[3].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, spellTrapSlots[3].gameObject.transform);
-            spellTrapSlots[3].AddCard(newCardObject.GetComponent<Monster>());
+            spellTrapSlots[3].AddCard(card);
         }
         else if (!spellTrapSlots[1].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, spellTrapSlots[1].gameObject.transform);
-            spellTrapSlots[1].AddCard(newCardObject.GetComponent<Monster>());
+            spellTrapSlots[1].AddCard(card);
         }
         else if (!spellTrapSlots[4].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, spellTrapSlots[4].gameObject.transform);
-            spellTrapSlots[4].AddCard(newCardObject.GetComponent<Monster>());
+            spellTrapSlots[4].AddCard(card);
         }
         else if (!spellTrapSlots[0].container)
         {
-            GameObject newCardObject = Instantiate(card.gameObject, spellTrapSlots[0].gameObject.transform);
-            spellTrapSlots[0].AddCard(newCardObject.GetComponent<Monster>());
+            spellTrapSlots[0].AddCard(card);
         }
+        card.ToggleFaceUp(!set);
     }
 
-    public bool CheckFull(Card card) //check for full field
+    public bool CheckFull(Card card, bool monster) //check for full field
     {
-        if (card.GetType() == typeof(Monster))
+        if (monster)
+        {
             foreach (Slot mSlot in monsterSlots)
                 if (!mSlot.container)
                     return false;
-
-        else if (card.GetType() == typeof(SpellTrap))
+        }
+        else
+        {
             foreach (Slot stSlot in spellTrapSlots)
                 if (!stSlot.container)
                     return false;
-
+        }
         return true;
+    }
+
+    public bool CheckEquipTarget(SpellTrap card)
+    {
+        bool targetAvailable = false;
+        foreach (Slot slots in monsterSlots)
+        {
+            if (!slots.container) continue;
+            Monster monster = slots.container.GetComponent<Monster>();
+            if (monster.type == card.requiredType) targetAvailable = true;
+        }
+
+        if (!targetAvailable) engine.AlertText("No valid target", true);
+        return targetAvailable;
     }
 }

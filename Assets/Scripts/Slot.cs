@@ -14,7 +14,20 @@ public class Slot : MonoBehaviour
 
     public void UseCard()
     {
-        field.UseCard(slotNumber, Input.GetMouseButtonUp(1)); //right click = activate effect  
+        if (!container) return;
+
+        if (container.GetType() == typeof(Monster))
+            field.UseCard(slotNumber, Input.GetMouseButtonUp(1)); //right click = activate effect  
+        else if (container.GetType() == typeof(SpellTrap))
+        {
+            if(field.CheckEquipTarget(container as SpellTrap))
+            {
+                container.ToggleFaceUp(true);
+                FindObjectOfType<DuelEngine>().PlaySound("play");
+                //trigger effect script here
+            }
+        }
+
     }
 
     public void RemoveCard()
