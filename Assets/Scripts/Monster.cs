@@ -13,12 +13,15 @@ public class Monster : Card
     public bool canChangePos;
     public bool hasBattled;
     public MonsterType type;
+    string printType;
 
     public List<Card> equips = new List<Card>();
 
     void Start()
     {
-        fullCardText += "\n\nATK/" + atk.ToString() + "  DEF/" + def.ToString();
+        FixPrints();
+
+        fullCardText += "\n\nATK/" + atk.ToString() + "  DEF/" + def.ToString() + "\n\nType: " + printType;
 
         if (!isFaceUp) //fix starting rotation if it's a monster that was set
         {
@@ -44,5 +47,24 @@ public class Monster : Card
     {
         if (isAttackPosition) transform.localRotation = Quaternion.identity;
         else transform.Rotate(0, 0, -90);
+    }
+
+    void FixPrints()
+    {
+        switch (type)
+        {
+            default:
+                printType = type.ToString();
+                break;
+            case MonsterType.BeastWarrior:
+                printType = "Beast-Warrior";
+                break;
+            case MonsterType.WingedBeast:
+                printType = "Winged Beast";
+                break;
+            case MonsterType.SeaSerpent:
+                printType = "Sea-Serpent";
+                break;
+        }
     }
 }
