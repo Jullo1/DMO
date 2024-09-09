@@ -18,8 +18,7 @@ public class Hand : Collection, IPointerClickHandler
                 if (CheckEquipTarget(selectedSpellTrap))
                 {
                     engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
-                    /*ChooseTarget();
-                    selectedCard.GetComponent<SpellTrap>().TriggerEffects(true);*/
+                    if (selectedSpellTrap.usesTarget) FindObjectOfType<DuelEngine>().InitiateSelectTarget(selectedSpellTrap);
                 }
             } else engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
 
@@ -52,8 +51,8 @@ public class Hand : Collection, IPointerClickHandler
                         }
                     }
                 }
-                else engine.AlertText("Can only normal summon 1 monster per turn", true);
-            } else engine.AlertText("You can only play monsters in your Main Phase", true);
+                else { engine.AlertText("Can only normal summon 1 monster per turn", true); engine.PlaySound("cant"); }
+            } else { engine.AlertText("You can only play monsters in your Main Phase", true); engine.PlaySound("cant"); }
         } else if (tag == "Player") engine.AlertText("It's not your turn yet!", true);
     }
 
@@ -92,26 +91,7 @@ public class Hand : Collection, IPointerClickHandler
             if (monster.type == card.requiredType) targetAvailable = true;
         }
 
-        if (!targetAvailable) engine.AlertText("No valid target", true);
+        if (!targetAvailable) { engine.AlertText("No valid target", true); engine.PlaySound("cant"); }
         return targetAvailable;
-    }
-
-    void ChooseTarget()
-    {
-        engine.AlertText("Choose a target");
-
-        /*switch (card.GetType())
-        {
-            case (istypeof(EquipSpell)):
-                EquipSpell equip = (EquipSpell)card;
-                playerField.selectedMonsterSlot = -1;
-                do
-                {
-                    if (playerField.selectedMonsterSlot == -1) continue;
-                    equip.target = (Monster)playerField.monsterSlots[playerField.selectedMonsterSlot].container;
-                } while (target.type != equip.requiredType);
-                equip.TriggerEffects(true);
-                break;
-        }*/
     }
 }

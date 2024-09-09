@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MonsterType { Dark, Light };
+public enum MonsterType { Warrior, Fiend, Dragon, Zombie, Spellcaster, Insect, Dinosaur, Beast, BeastWarrior, Pyro, Plant, WingedBeast, Aqua, Fairy, Rock, Fish, Thunder, Reptile, Machine, SeaSerpent, None };
 
 public class Monster : Card
 {
@@ -37,7 +37,7 @@ public class Monster : Card
             canChangePos = false;
             UpdateCardRotation();
         }
-        else if (ownedByPlayer) FindObjectOfType<DuelEngine>().AlertText("Can't change battle position this turn", true);
+        else if (ownedByPlayer) { FindObjectOfType<DuelEngine>().AlertText("Can't change battle position this turn", true); FindObjectOfType<DuelEngine>().PlaySound("cant"); }
     }
 
     void UpdateCardRotation()

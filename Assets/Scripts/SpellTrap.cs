@@ -1,5 +1,6 @@
 public enum SpellType { None, Normal, Equip, Continuous, Quick, Field };
 public enum TrapType { None, Normal, Continuous, Counter };
+public enum Target { None, Monster, Spell, Trap, SpellTrap, All };
 public class SpellTrap : Card
 {
     public bool usesTarget;
@@ -9,6 +10,8 @@ public class SpellTrap : Card
     public TrapType trapType;
 
     public MonsterType requiredType;
+    public Target targetType;
+
     public int[] boostValue = new int[2]; //index 0 = attack, index 1 = defence
 
     public void TriggerEffects(bool activate) //true to apply effects, false to remove

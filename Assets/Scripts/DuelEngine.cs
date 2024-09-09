@@ -46,6 +46,7 @@ public class DuelEngine : MonoBehaviour
     Monster tributeSummonCard;
     bool tributeIsSet;
     bool initiatedTribute;
+    public Card activatedCard = null;
 
     AudioSource[] aud;
     //duel sfx
@@ -55,6 +56,7 @@ public class DuelEngine : MonoBehaviour
     [SerializeField] AudioClip sendSound;
     [SerializeField] AudioClip statusSound;
     [SerializeField] AudioClip damageSound;
+    [SerializeField] AudioClip magicSound;
 
     //menus sfx
     [SerializeField] AudioClip blipSound;
@@ -427,9 +429,21 @@ public class DuelEngine : MonoBehaviour
                 type = 0;
                 aud[type].clip = cancelSound;
                 break;
+            case "cant":
+                type = 0;
+                aud[type].clip = cantSound;
+                break;
             case "blip":
                 type = 0;
                 aud[type].clip = blipSound;
+                break;
+            case "magic":
+                type = 1;
+                aud[type].clip = magicSound;
+                break;
+            case "in":
+                type = 0;
+                aud[type].clip = inSound;
                 break;
         }
         aud[type].Play();
@@ -584,7 +598,7 @@ public class DuelEngine : MonoBehaviour
         if (card.hasBattled || !card.isAttackPosition)
         {
             AlertText("This card can't attack yet", true);
-            PlaySound("cancel");
+            PlaySound("cant");
             return;
         }
         PlaySound("select");
@@ -771,5 +785,37 @@ public class DuelEngine : MonoBehaviour
     public void Reset()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void InitiateSelectTarget(Card card)
+    {
+        activatedCard = card;
+        AlertText("Choose a target");
+
+        if (card.GetType() == typeof(SpellTrap))
+            PlaySound("in");
+    }
+
+    public void SelectTarget(Card target)
+    {
+        if (activatedCard.GetType() == typeof(SpellTrap))
+        {
+            SpellTrap spellTrap = activatedCard as SpellTrap;
+            if (spellTrap.targetType == Target.Monster)
+            {
+                Monster monster = target as Monster;
+                if (spellTrap.requiredType == monster.type)
+                {
+                    spellTrap.target = target;
+                    if (spellTrap.spellType == SpellType.Equip) monster.equips.Add(spellTrap);
+                    spellTrap.TriggerEffects(true);
+                    activatedCard = null;
+                    AlertText("");
+                    PlaySound("magic");
+                    return;
+                }
+            }
+        }
+        AlertText("Invalid target", true);
     }
 }

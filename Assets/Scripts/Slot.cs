@@ -18,13 +18,13 @@ public class Slot : MonoBehaviour
 
         if (container.GetType() == typeof(Monster))
             field.UseCard(slotNumber, Input.GetMouseButtonUp(1)); //right click = activate effect  
-        else if (container.GetType() == typeof(SpellTrap))
+        else if (container.GetType() == typeof(SpellTrap) && !container.isFaceUp)
         {
-            if(field.CheckEquipTarget(container as SpellTrap))
+            SpellTrap spellTrap = container as SpellTrap;
+            if (field.CheckEquipTarget(spellTrap))
             {
-                container.ToggleFaceUp(true);
-                FindObjectOfType<DuelEngine>().PlaySound("play");
-                //trigger effect script here
+                spellTrap.ToggleFaceUp(true);
+                if (spellTrap.usesTarget) FindObjectOfType<DuelEngine>().InitiateSelectTarget(spellTrap);
             }
         }
 

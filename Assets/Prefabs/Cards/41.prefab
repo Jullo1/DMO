@@ -172,6 +172,14 @@ MonoBehaviour:
   isFaceUp: 0
   cardBack: {fileID: 4297943177549355468}
   fullCardText: 
+  index: -1
+  usesTarget: 1
+  target: {fileID: 0}
+  spellType: 2
+  trapType: 0
+  requiredType: 7
+  targetType: 1
+  boostValue: 2c0100002c010000
 --- !u!82 &4405484966363529436
 AudioSource:
   m_ObjectHideFlags: 0

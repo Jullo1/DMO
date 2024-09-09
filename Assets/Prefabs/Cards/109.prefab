@@ -171,12 +171,15 @@ MonoBehaviour:
   isFaceUp: 0
   cardBack: {fileID: 4297943177549355468}
   fullCardText: 
+  index: -1
   atk: 1300
   def: 1600
   level: 5
   isAttackPosition: 0
   canChangePos: 0
   hasBattled: 0
+  type: 14
+  equips: []
 --- !u!82 &100627481117948265
 AudioSource:
   m_ObjectHideFlags: 0

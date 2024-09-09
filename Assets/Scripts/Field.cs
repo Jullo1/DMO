@@ -20,11 +20,17 @@ public class Field : MonoBehaviour
             return;
         }
 
-        if (engine.currentPhase == Phase.Battle)
+        if (engine.activatedCard != null)
+        {
+            engine.SelectTarget((Monster)monsterSlots[fieldIndex - 1].container);
+        }
+        else if (engine.currentPhase == Phase.Battle)
+        {
             Attack(fieldIndex);
-
+        }
         else if (engine.currentPhase == Phase.Main || engine.currentPhase == Phase.Main2)
         {
+            
             if (engine.tributesLeft > 0)
             {
                 if (fieldIndex != previousTributeSlot)
@@ -133,6 +139,8 @@ public class Field : MonoBehaviour
             spellTrapSlots[0].AddCard(card);
         }
         card.ToggleFaceUp(!set);
+
+        if (set) engine.PlaySound("send");
     }
 
     public bool CheckFull(Card card, bool monster) //check for full field
@@ -162,7 +170,7 @@ public class Field : MonoBehaviour
             if (monster.type == card.requiredType) targetAvailable = true;
         }
 
-        if (!targetAvailable) engine.AlertText("No valid target", true);
+        if (!targetAvailable) { engine.AlertText("No valid target", true); engine.PlaySound("cant"); }
         return targetAvailable;
     }
 }
