@@ -15,7 +15,6 @@ Features
 Bugs
 -AI not properly playing some cards
 -AI skipping player's draw phase and playing the cancel sound
--AI glitching player's LP
 -AI sometimes tribute summoning without tributes
 
 

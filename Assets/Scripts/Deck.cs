@@ -1,8 +1,16 @@
+using System.Collections.Generic;
+
 public class Deck : Collection
 {
+    public static List<Card> playerDeck;
     protected override void Awake()
     {
         base.Awake();
+        if (tag == "Player")
+        {
+            cardList.Clear();
+            cardList.AddRange(playerDeck);
+        }
         LoadDeck();
     }
 

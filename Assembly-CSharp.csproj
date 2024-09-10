@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\Slot.cs" />
     <Compile Include="Assets\Scripts\FieldCard.cs" />
     <Compile Include="Assets\Scripts\Field.cs" />
+    <Compile Include="Assets\Scripts\MainMenu.cs" />
     <Compile Include="Assets\Scripts\Card.cs" />
     <Compile Include="Assets\Scripts\FusionDeck.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />

@@ -784,7 +784,7 @@ public class DuelEngine : MonoBehaviour
 
     public void Reset()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("Main Menu");
     }
 
     public void InitiateSelectTarget(Card card)
