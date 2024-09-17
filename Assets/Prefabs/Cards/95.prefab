@@ -174,12 +174,14 @@ MonoBehaviour:
   cardBack: {fileID: 4297943177549355468}
   fullCardText: 
   index: -1
-  usesTarget: 0
+  usesTarget: 1
   target: {fileID: 0}
   spellType: 1
   trapType: 0
   requiredType: 20
   targetType: 1
+  targetZone: 1
+  effectType: 2
   boostValue: 0000000000000000
 --- !u!82 &-2066402288776672701
 AudioSource:

@@ -1,18 +1,25 @@
 Features
--Normal spells
--Field spells
+-Change position spells (Card 95)
+-Move Card Spells (Cards 65, 118)
+-Restriction spells (Card 101)
+-Field spells (Cards 46-51)
 -Graveyard/fusion deck shows all the cards on hover, arranged from left to right, similar to hand script. Return the cards to the original position when the mouse moves away.
 -Consider making banished cards disappear completely instead of making a second graveyard.
 
 -Change phase/turn feedback
 -Board and UI graphic designs
 -Attack animation
--Card activation animation
+-Activation animation
+-Field spells changes UI
 
--Normal traps
+-Effect Monsters
+-Traps (autoactivate)
+-Confirm activation for traps
 
+-Polymerization (Card 59)
 
 Bugs
+-If drawing a card while mouse is over hand, all cards are moved up
 -AI not properly playing some cards
 -AI skipping player's draw phase and playing the cancel sound
 -AI sometimes tribute summoning without tributes
@@ -72,12 +79,12 @@ From now on, the game uses Advanced Rules. Ancient Rules can be selected in Free
 Yugi feels the Millenium Puzzle telling him to enter the tournament, not sure why. He wanted to particiapte for fun anyways. Joey follows.
 In the way to the tournament Weebil throws the exodia cards away.
 -Playing character: Yami Yugi (Yugi outside duel, changes to Yami during a duel) (exodia cards lost)
---Weebil (lv 4)
+--Weebil (lv 3)
 --Mako (lv 4)
 -Playing character: Joey (Time Wizard, Gearfried, Thousand Dragon, Graceful Dice, etc)
 --Rex (lv 3) (unlocks red-eyes)
 --Mai (lv 4)
---Bandit (lv 4)
+--Bandit (lv 5)
 
 Chapter 4: Mid-Tournament Break
 Playing character: Yami Yugi
@@ -93,20 +100,21 @@ Yugi also has the Millenium Puzzle, so 4 more millenium items must claimed. Ishi
 
 Chapter 5: Tournament Finals
 These are supposed to be match duels due to tournament finals' rules (except for the final match which is 1 duel), but you must win 2 in a row or else it's game over since you lose the millenium items when losing a duel. The first 2 duelists wants the millenium items, Kaiba is not interested but he must be defeated or else you lose the chance to claim the Millenium Rod.
---Bakura (lv 3, 8) (quarter finals, 2 duels, changes to Yami Bakura after beating Bakura (uses the same weak deck than in chapter 1), then Yami Bakura unlocked in free mode, Millenium Ring obtained)
---Pegasus (lv 7, 9) (semi finals, 2 duels, uses toon deck first, then changes to Relinquished version on second duel, Relinquished version unlocked in Free Duel (the toon version uses unobtainable cards), Millenium Eye obtained)
---Kaiba (lv 10)  (final match, 1 duel, Millenium Rod obtained) (same deck as before, now he is unlocked in free duel)
+--Bakura (lv 3, 8) (quarter finals, 2 duels, changes to Yami Bakura after beating Bakura (uses the same weak deck than in chapter 1), then Yami Bakura unlocked in free mode, he has the Millenium Ring)
+--Pegasus (lv 6, 9) (semi finals, 2 duels, uses toon deck first, then changes to Relinquished version on second duel, Relinquished version unlocked in Free Duel (the toon version uses unobtainable cards), he has the Millenium Eye)
+--Kaiba (lv 10)  (final match, 1 duel, beat him to claim ownership of the Millenium Rod) (same deck as before, now he is unlocked in free duel)
 
 Chapter 6: Back to Ancient Egypt
-All millenium items collected, went to Pharaoh's Tomb, Yami is sepparated from Yugi. In order for the ritual to be complete, Yami must lose a duel. Yugi claims he is the only one who can beat him because he knows him the best.
+After the tournament ends, Shadi says he will go retrieve the remaining items (Ring and Eye) now that they belong to Yugi and take them all with the Millenium Key, Scales, Necklace and Rod (which he is carrying) to the ritual place. Then he explains that in order to release Yami's soul, he must place the final item, the Millenium Puzzle, and then Yami must be defeated in a duel. Gives Yugi time to prepare for the final duel.
+Shadi teleports Yugi and friends to the Pharaoh's Tomb, Yami is sepparated from Yugi. Yugi claims he is the only one who can beat him because he knows him the best.
 Playing character: Yugi (no bonus cards, Dark Magician, Gaia, etc, given to Yami, must use all the cards collected by the player)
 --Yami (lv 10)
-Now that Yami/the prince is back to his time, he must stop Heishin from taking over the kingdom
+Now that Yami/the prince is back to his time, he must stop Heishin from taking over the kingdom. Heishin was looking for the Millenium Puzzle that was sealed with the prince, so they allow him to see him.
 -Playing character: Prince (no bonus cards as well) (Ancient Rules are back, so no tribute summons, and must wait a turn to attack with fusion/ritual monsters)
 --Heishin (lv 8, same deck as before, now he is unlocked in free duel)
 Heishin who had 6 millenium items is defeated, so now the prince owns all 7. It was surprisingly easy, something is wrong.
-Seto appears (Kaiba's past version) and says he was waiting for someone to collect all 7 items, to save him the trouble of looking for all of them himself. He was confident he could defeat Heishin or whoever defeats him. He explains the owner of a millenium item must accept any challenge or forfeit the ownership.
---Seto (lv 12) (uses an upgraded version of Kaiba's deck, by far the strongest opponent yet)
+Seto appears (Kaiba's past version) and says he was waiting for someone to collect all the items, to save him the trouble of looking for all of them himself. He was confident he could defeat Heishin or whoever defeats him. He explains that he actually owns the Millenium Rod, not Heishin, and he was planning to betray him when he thought he had all 7.
+--Seto (lv 12) (uses an upgraded version of Kaiba's deck)
 Heishin demands that all items are given to him or else he kills Seto. The prince has sympathized with Seto as his rival during the duel and wants to save him, so he gives the items to Heishin. All 7 items are placed, the ritual is complete despite the prince still owning the items.
 Nitemare appears. He refuses to listen to Heishin since he has no millenium items (the prince is still the owner of the items since he didn't lose a duel for them, so Heishin can't use the items' powers to defy Nitemare). Nitemare seals Heishin away, then claims he created the cards and the millenium items so he is op af.
 Seto manages to save the Millenium Puzzle and gives it to the prince as gratitude for saving him. He tells the prince to try to stop Nitemare, he is the only one who can do it. The prince is still the legitimate owner of the Millenium Puzzle because he didn't lose a duel despite giving the item away, so he can use its power to confront Nitemare.

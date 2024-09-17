@@ -10,28 +10,13 @@ public class Hand : Collection, IPointerClickHandler
     {
         Card selectedCard = cardList[handIndex];
 
-        if (selectedCard.GetComponent<SpellTrap>())
-        {
-            SpellTrap selectedSpellTrap = selectedCard as SpellTrap;
-            if (!set)
-            {
-                if (CheckEquipTarget(selectedSpellTrap))
-                {
-                    engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
-                    if (selectedSpellTrap.usesTarget) FindObjectOfType<DuelEngine>().InitiateSelectTarget(selectedSpellTrap);
-                }
-            } else engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
-
-            return;
-        }
-
         if ((engine.playerTurn && tag == "Player") || (!engine.playerTurn && tag == "Opponent"))
         {
             if (engine.currentPhase == Phase.Main || engine.currentPhase == Phase.Main2)
             {
-                if (canNormalSummon)
+                if (selectedCard is Monster)
                 {
-                    if (selectedCard is Monster)
+                    if (canNormalSummon)
                     {
                         Monster monsterCard = (Monster)selectedCard;
                         if (monsterCard.level <= 4)
@@ -50,9 +35,29 @@ public class Hand : Collection, IPointerClickHandler
                             engine.InitiateTribute((Monster)selectedCard, 2, set);
                         }
                     }
+                    else { engine.AlertText("Can only normal summon 1 monster per turn", true); engine.PlaySound("cant"); }
                 }
-                else { engine.AlertText("Can only normal summon 1 monster per turn", true); engine.PlaySound("cant"); }
-            } else { engine.AlertText("You can only play monsters in your Main Phase", true); engine.PlaySound("cant"); }
+                else if (selectedCard is SpellTrap)
+                {
+                    SpellTrap selectedSpellTrap = selectedCard as SpellTrap;
+                    if (!set)
+                    {
+                        if (!selectedSpellTrap.usesTarget)
+                        {
+                            engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
+                            selectedSpellTrap.TriggerEffects();
+                        }
+                        else if (CheckValidTarget(selectedSpellTrap))
+                        {
+                            engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
+                            engine.InitiateSelectTarget(selectedSpellTrap);
+                        }
+                    }
+                    else engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player")); //set spell/trap card
+
+                    return;
+                }
+            } else { engine.AlertText("You can only play cards in your Main Phase", true); engine.PlaySound("cant"); }
         } else if (tag == "Player") engine.AlertText("It's not your turn yet!", true);
     }
 
@@ -81,7 +86,7 @@ public class Hand : Collection, IPointerClickHandler
         PlayCard(selectedCard.index, eventData.button == PointerEventData.InputButton.Right); //right click = set
     }
 
-    public bool CheckEquipTarget(SpellTrap card)
+    public bool CheckValidTarget(SpellTrap card)
     {
         bool targetAvailable = false;
         foreach (Slot slots in field.monsterSlots)

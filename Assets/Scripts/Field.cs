@@ -160,7 +160,7 @@ public class Field : MonoBehaviour
         return true;
     }
 
-    public bool CheckEquipTarget(SpellTrap card)
+    public bool CheckValidTarget(SpellTrap card)
     {
         bool targetAvailable = false;
         foreach (Slot slots in monsterSlots)

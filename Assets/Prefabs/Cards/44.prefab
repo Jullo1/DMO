@@ -179,6 +179,8 @@ MonoBehaviour:
   trapType: 0
   requiredType: 12
   targetType: 1
+  targetZone: 1
+  effectType: 1
   boostValue: 2c0100002c010000
 --- !u!82 &192910542505499790
 AudioSource:

@@ -6,6 +6,7 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] List<Card> deck1 = new List<Card>();
     [SerializeField] List<Card> deck2 = new List<Card>();
+    [SerializeField] List<Card> test = new List<Card>();
 
     public void ChooseDeck(int deck)
     {

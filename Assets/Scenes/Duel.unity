@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4872,6 +4871,7 @@ MonoBehaviour:
   statusSound: {fileID: 8300000, guid: 7840f21e9d30caa4db5c299036a1186d, type: 3}
   damageSound: {fileID: 8300000, guid: e049fdad8b0d87947876010e80ae2ac5, type: 3}
   magicSound: {fileID: 8300000, guid: 71b7c1c72ef25614891f1080d4761c93, type: 3}
+  magic2Sound: {fileID: 8300000, guid: 2496021205921354bb5ea1c01cff31e9, type: 3}
   blipSound: {fileID: 8300000, guid: d669363fdff2c304882189cfefbb51bb, type: 3}
   selectSound: {fileID: 8300000, guid: ddd261489c98bc747bda5e88a1fa51af, type: 3}
   decideSound: {fileID: 8300000, guid: d8389701e848431439fbc0b1cedf9b3a, type: 3}

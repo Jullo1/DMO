@@ -15,11 +15,13 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public string fullCardText;
 
     public int index = -1;
-    GameManager game;
+    protected GameManager game;
+    protected DuelEngine engine;
 
     void Awake()
     {
         game = FindObjectOfType<GameManager>();
+        engine = FindObjectOfType<DuelEngine>();
         cardImage = GetComponent<Image>();
         fullCardText = cardName + "\n" + cardText;
         cardBack.GetComponent<Image>().raycastTarget = false; //disable cardback raycast

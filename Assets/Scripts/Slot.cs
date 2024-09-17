@@ -6,10 +6,12 @@ public class Slot : MonoBehaviour
     public Zone location;
     public int slotNumber;
     Field field;
+    DuelEngine engine;
 
     void Awake()
     {
         field = GetComponentInParent<Field>();
+        engine = FindObjectOfType<DuelEngine>();
     }
 
     public void UseCard()
@@ -21,10 +23,15 @@ public class Slot : MonoBehaviour
         else if (container.GetType() == typeof(SpellTrap) && !container.isFaceUp)
         {
             SpellTrap spellTrap = container as SpellTrap;
-            if (field.CheckEquipTarget(spellTrap))
+            if (!spellTrap.usesTarget)
             {
                 spellTrap.ToggleFaceUp(true);
-                if (spellTrap.usesTarget) FindObjectOfType<DuelEngine>().InitiateSelectTarget(spellTrap);
+                spellTrap.TriggerEffects(true);
+            }
+            else if (field.CheckValidTarget(spellTrap))
+            {
+                spellTrap.ToggleFaceUp(true);
+                engine.InitiateSelectTarget(spellTrap);
             }
         }
 

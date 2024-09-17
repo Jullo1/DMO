@@ -57,6 +57,7 @@ public class DuelEngine : MonoBehaviour
     [SerializeField] AudioClip statusSound;
     [SerializeField] AudioClip damageSound;
     [SerializeField] AudioClip magicSound;
+    [SerializeField] AudioClip magic2Sound;
 
     //menus sfx
     [SerializeField] AudioClip blipSound;
@@ -357,6 +358,18 @@ public class DuelEngine : MonoBehaviour
         playerInputs.enabled = !playerInputs.enabled;
     }
 
+    public void Draw(bool isPlayer, int amount)
+    {
+        if (isPlayer) player.DrawCard(amount);
+        else opponent.DrawCard(amount);
+    }
+
+    public void ChangeLP(bool isPlayer, int amount)
+    {
+        if (isPlayer) StartCoroutine(player.ChangeLP(amount));
+        else StartCoroutine(opponent.ChangeLP(amount));
+    }
+
     Phase GetNextPhase()
     {
         switch (currentPhase)
@@ -440,6 +453,10 @@ public class DuelEngine : MonoBehaviour
             case "magic":
                 type = 1;
                 aud[type].clip = magicSound;
+                break;
+            case "magic2":
+                type = 1;
+                aud[type].clip = magic2Sound;
                 break;
             case "in":
                 type = 0;
@@ -577,6 +594,7 @@ public class DuelEngine : MonoBehaviour
                 else opponentDeck.AddCard(card);
                 break;
             case Zone.Graveyard:
+                card.ToggleFaceUp(true);
                 if (card.ownedByPlayer) playerGraveyard.AddCard(card);
                 else opponentGraveyard.AddCard(card);
                 break;
