@@ -1,5 +1,5 @@
 # DMO
-Duel Monsters Online, oldschool style Yu-Gi-Oh! in Unity. Quick preview of the game: https://julianlerej.com/DM
+Duel Monsters Online, oldschool style Yu-Gi-Oh! in Unity. Quick preview here: https://julianlerej.com/DM
 
 My goal is to make an open source ygo engine, because I believe the modern official games and TCG are completely ruined with powercreep and microtransactions caused by commercial pressure. I work on this whenever I have time, as a hobby and to train my programming skills.
 
