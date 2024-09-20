@@ -50,6 +50,6 @@ public class Slot : MonoBehaviour
         container.transform.SetParent(transform, false);
         container.transform.localPosition = Vector3.zero;
         container.transform.localRotation = Quaternion.identity;
-        container.gameObject.transform.SetAsFirstSibling();
+        container.gameObject.transform.SetAsLastSibling();
     }
 }
