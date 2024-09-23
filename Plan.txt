@@ -1,25 +1,20 @@
 Features
--Change position spells (Card 95)
--Move Card Spells (Cards 65, 118) (activate graveyard preview, see below)
--Restriction spells (Card 101)
 -Field spells (Cards 46-51)
 
--Graveyard/fusion deck shows all the cards on hover, arranged from left to right, similar to hand script. Return the cards to the original position when the mouse moves away.
--Consider making banished cards disappear completely instead of making a second graveyard.
-
--Change phase/turn feedback, improve phase button
--UI skin: Slots, background, avatars
-
+-Change phase/turn feedback
 -Attack animation
 -Activation/summon animation
 -Field spell reskins
+-Backgrounds
 
+-Banish (Card 65)
 -Effect Monsters
 -Traps (autoactivate)
 -Confirm activation for traps
 -Polymerization (Card 59)
 
 Bugs
+-Fissure targeting face down cards
 -Lock phase and hand controls when using a card that requires a target
 -If drawing a card while mouse is over hand, all cards in hand are moved up
 -AI not properly playing some cards
@@ -28,6 +23,7 @@ Bugs
 
 
 Functionality
+-Make spell/traps that increase/lower lp stay in the field until the lp change is made
 -Battle Phase and Main Phase 2 should be skipped if no attacking monsters or first turn (next phase button shows end turn instead)
 -Right click in the turn button ends the turn
 -Show attack and defence info in a different box than the card text

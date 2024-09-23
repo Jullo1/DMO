@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     bool stopLpRoutine = false;
     [SerializeField] AudioClip endSound;
 
+    public int cantAttack = 0;
+
     void Awake()
     {
         engine = FindObjectOfType<DuelEngine>();

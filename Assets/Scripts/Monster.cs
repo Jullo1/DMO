@@ -32,7 +32,7 @@ public class Monster : Card
 
     public void TogglePosition(bool isAttack, bool isForced = false)
     {
-        if ((canChangePos && (!hasBattled)) || isForced) //if is changed by engine
+        if ((canChangePos && !hasBattled) || isForced) //forced = changed by effect
         {
             isAttackPosition = isAttack;
             if (isAttack && !isFaceUp) { ToggleFaceUp(true); if (!isForced) FindObjectOfType<DuelEngine>().PlaySound("play"); }
@@ -45,8 +45,10 @@ public class Monster : Card
 
     void UpdateCardRotation()
     {
-        if (isAttackPosition) transform.localRotation = Quaternion.identity;
-        else transform.Rotate(0, 0, -90);
+        if (isAttackPosition)
+            transform.localRotation = Quaternion.identity;
+        else
+            transform.Rotate(0, 0, -90);
     }
 
     void FixPrints()

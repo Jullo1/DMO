@@ -62,7 +62,6 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\EffectMonster.cs" />
     <Compile Include="Assets\Scripts\DuelEngine.cs" />
-    <Compile Include="Assets\Scripts\Banished.cs" />
     <Compile Include="Assets\Scripts\Collection.cs" />
     <Compile Include="Assets\Scripts\Slot.cs" />
     <Compile Include="Assets\Scripts\FieldCard.cs" />

@@ -179,7 +179,12 @@ MonoBehaviour:
   requiredType: 20
   targetType: 0
   targetZone: 1
+  endZone: 4
   effectType: 4
+  requiresAtkPos: 0
+  cantTargetPlayerCards: 0
+  cantTargetOpponentCards: 0
+  turnsLeft: 0
   boostValue: 0000000000000000
 --- !u!82 &1696031312128087940
 AudioSource:

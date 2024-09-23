@@ -13,13 +13,18 @@ public class SpellTrap : Card
     public MonsterType requiredType;
     public Target targetType;
     public Zone targetZone;
+    public Zone endZone;
     public EffectType effectType;
+    public bool requiresAtkPos;
+    public bool cantTargetPlayerCards;
+    public bool cantTargetOpponentCards;
+    public int turnsLeft;
 
     public int[] boostValue = new int[2]; //index 0 = attack/player, index 1 = defence/enemy
 
     public void TriggerEffects(bool activate = true) //true to apply effects, false to remove
     {
-        switch(effectType)
+        switch (effectType)
         {
             case EffectType.Equip:
                 int multiplier = 1;
@@ -37,13 +42,39 @@ public class SpellTrap : Card
                 engine.PlaySound("magic");
                 engine.MoveCard(GetComponent<Card>(), Zone.Graveyard, false);
                 break;
-
+            case EffectType.ChangePosition:
+                if (cardName == "Stop Defense")
+                {
+                    Monster changePosMonster = target as Monster;
+                    changePosMonster.TogglePosition(true, true);
+                    engine.MoveCard(GetComponent<Card>(), Zone.Graveyard, false);
+                }
+                break;
+            case EffectType.Restrict:
+                if (cardName == "Swords of Revealing Light")
+                {
+                    foreach (Slot slot in FindObjectsOfType<Slot>())
+                    { //flip cards
+                        if (!slot.container) continue;
+                        if (slot.container.ownedByPlayer != ownedByPlayer)
+                            slot.container.ToggleFaceUp(true);
+                    }
+                    engine.ApplyRestriction(!ownedByPlayer, RestrictionType.Battle, 3);
+                    turnsLeft = 6; //3 player turns, 3 opponent turns
+                }
+                engine.PlaySound("magic");
+                break;
             case EffectType.MoveCard:
                 if (targetZone == Zone.Deck)
                 {
                     engine.Draw(ownedByPlayer, boostValue[0]);
+                    engine.MoveCard(GetComponent<Card>(), endZone);
                     engine.MoveCard(GetComponent<Card>(), Zone.Graveyard, false);
                     break;
+                }
+                else if (targetZone == Zone.Graveyard)
+                {
+                    engine.MoveCard(target, Zone.Field, false, ownedByPlayer, false, true);
                 }
                 if (cardName == "Dark Hole")
                 {
@@ -51,6 +82,10 @@ public class SpellTrap : Card
                         if (slot.container)
                             if (slot.container.GetType() == typeof(Monster))
                                 engine.MoveCard(slot.container, Zone.Graveyard, false, true, true);
+
+                    engine.PlaySound("magic2");
+                    engine.MoveCard(GetComponent<Card>(), Zone.Graveyard, false);
+                    break;
                 }
                 else if (cardName == "Raigeki")
                 {

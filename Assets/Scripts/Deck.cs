@@ -6,7 +6,7 @@ public class Deck : Collection
     protected override void Awake()
     {
         base.Awake();
-        if (tag == "Player")
+        if (tag == "Player" && playerDeck != null)
         {
             cardList.Clear();
             cardList.AddRange(playerDeck);

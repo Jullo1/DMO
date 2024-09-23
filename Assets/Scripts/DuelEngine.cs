@@ -7,6 +7,7 @@ using System.Collections;
 public enum Phase { Undefined, Draw, Standby, Main, Battle, Main2, End };
 public enum Zone { Undefined, Field, Hand, Deck, Graveyard, Banished, Fusion };
 public enum SummonCondition { Normal, Special, Fusion, Ritual };
+public enum RestrictionType { None, Battle }
 
 public class DuelEngine : MonoBehaviour
 {
@@ -19,14 +20,12 @@ public class DuelEngine : MonoBehaviour
     Deck playerDeck;
     Hand playerHand;
     Graveyard playerGraveyard;
-    Banished playerBanished;
     FusionDeck playerFusionDeck;
 
     Field opponentField;
     Deck opponentDeck;
     Hand opponentHand;
     Graveyard opponentGraveyard;
-    Banished opponentBanished;
     FusionDeck opponentFusionDeck;
     FieldCard fieldCard;
 
@@ -106,13 +105,6 @@ public class DuelEngine : MonoBehaviour
                 playerGraveyard = graveyard;
             else if (graveyard.tag == "Opponent")
                 opponentGraveyard = graveyard;
-        }
-        foreach (Banished banished in FindObjectsOfType<Banished>())
-        {
-            if (banished.tag == "Player")
-                playerBanished = banished;
-            else if (banished.tag == "Opponent")
-                opponentBanished = banished;
         }
         foreach (FusionDeck fusion in FindObjectsOfType<FusionDeck>())
         {
@@ -376,7 +368,10 @@ public class DuelEngine : MonoBehaviour
         {
             case Phase.Draw: return Phase.Standby;
             case Phase.Standby: return Phase.Main;
-            case Phase.Main: return Phase.Battle;
+            case Phase.Main:
+                if (playerTurn && player.cantAttack > 0) return Phase.End;
+                else if (!playerTurn && opponent.cantAttack > 0) return Phase.End;
+                else return Phase.Battle;
             case Phase.Battle: return Phase.Main2;
             case Phase.Main2: return Phase.End;
         }
@@ -525,6 +520,11 @@ public class DuelEngine : MonoBehaviour
             case Phase.Main2:
                 break;
             case Phase.End:
+                if (playerTurn && player.cantAttack > 0)
+                    player.cantAttack--;
+                else if (!playerTurn && opponent.cantAttack > 0)
+                    opponent.cantAttack--;
+                CheckCardDurations();
                 NextPhase();
                 break;
         }
@@ -532,7 +532,21 @@ public class DuelEngine : MonoBehaviour
         if (!playerTurn) StartCoroutine(AIMove());
     }
 
-    public void MoveCard(Card card, Zone destination, bool set = false, bool isPlayer = true, bool destroyed = false, bool giveControl = false)
+    void CheckCardDurations()
+    {
+        foreach (Field field in FindObjectsOfType<Field>())
+        {
+            foreach (Slot slot in field.spellTrapSlots)
+            {
+                if (slot.container == null) continue;
+                SpellTrap spellTrap = slot.container.GetComponent<SpellTrap>();
+                if (spellTrap.turnsLeft == 1) MoveCard(spellTrap, Zone.Graveyard, false, spellTrap.ownedByPlayer);
+                if (spellTrap.turnsLeft > 0) spellTrap.turnsLeft--;
+            }
+        }
+    }
+
+    public void MoveCard(Card card, Zone destination, bool set = false, bool isPlayer = true, bool destroyed = false, bool specialSummon = false, bool giveControl = false)
     {
         switch (destination) //add card to destination
         {
@@ -554,7 +568,8 @@ public class DuelEngine : MonoBehaviour
                         if (!playerField.CheckFull(card, true))
                         {
                             playerField.PlayMonster((Monster)card, set);
-                            playerHand.canNormalSummon = false;
+                            if (!specialSummon) playerHand.canNormalSummon = false;
+                            card.GetComponent<Monster>().hasBattled = false;
                         }
                         else AlertText("Field is full!", true);
                     }
@@ -563,7 +578,8 @@ public class DuelEngine : MonoBehaviour
                         if (!playerField.CheckFull(card, true))
                         {
                             opponentField.PlayMonster((Monster)card, set);
-                            opponentHand.canNormalSummon = false;
+                            if (!specialSummon) playerHand.canNormalSummon = false;
+                            card.GetComponent<Monster>().hasBattled = false;
                         }
                         else AlertText("Field is full!", true);
                     }
@@ -597,11 +613,6 @@ public class DuelEngine : MonoBehaviour
                 card.ToggleFaceUp(true);
                 if (card.ownedByPlayer) playerGraveyard.AddCard(card);
                 else opponentGraveyard.AddCard(card);
-                break;
-            case Zone.Banished:
-                PlaySound("search");
-                if (card.ownedByPlayer) playerBanished.AddCard(card);
-                else opponentBanished.AddCard(card);
                 break;
             case Zone.Fusion:
                 PlaySound("send");
@@ -822,18 +833,47 @@ public class DuelEngine : MonoBehaviour
             if (spellTrap.targetType == Target.Monster)
             {
                 Monster monster = target as Monster;
-                if (spellTrap.requiredType == monster.type)
+                if (spellTrap.effectType == EffectType.ChangePosition)
                 {
-                    spellTrap.target = target;
-                    if (spellTrap.spellType == SpellType.Equip) monster.equips.Add(spellTrap);
-                    spellTrap.TriggerEffects(true);
-                    activatedCard = null;
-                    AlertText("");
-                    PlaySound("magic");
-                    return;
+                    if (monster.isAttackPosition == spellTrap.requiresAtkPos)
+                        spellTrap.target = target;
                 }
+                else
+                {
+                    if (monster.type == spellTrap.requiredType)
+                    {
+                        spellTrap.target = target;
+                        if (spellTrap.spellType == SpellType.Equip) monster.equips.Add(spellTrap);
+                    }
+                }
+            }
+
+            if (spellTrap.target != null)
+            {
+                spellTrap.TriggerEffects(true);
+                activatedCard = null;
+                AlertText("");
+                PlaySound("magic");
+                return;
             }
         }
         AlertText("Invalid target", true);
+    }
+
+    public void ManualTriggerGraveyard(bool state, bool isPlayer)
+    {
+        if (isPlayer) playerGraveyard.ManualTrigger(state);
+        else opponentGraveyard.ManualTrigger(state);
+    }
+
+    public void ApplyRestriction(bool isPlayer, RestrictionType restrictionType, int amount)
+    {
+        switch (restrictionType)
+        {
+            case RestrictionType.Battle:
+                if (isPlayer) player.cantAttack = 3;
+                else opponent.cantAttack = 3;
+                break;
+        }
     }
 }

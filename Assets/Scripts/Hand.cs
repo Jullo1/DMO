@@ -3,7 +3,6 @@ using UnityEngine.EventSystems;
 
 public class Hand : Collection, IPointerClickHandler
 {
-    [SerializeField] Field field;
     public bool canNormalSummon;
 
     public void PlayCard(int handIndex, bool set)
@@ -44,16 +43,39 @@ public class Hand : Collection, IPointerClickHandler
                     {
                         if (!selectedSpellTrap.usesTarget)
                         {
-                            engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
+                            engine.MoveCard(selectedSpellTrap, Zone.Field, set, tag == "Player");
                             selectedSpellTrap.TriggerEffects();
                         }
-                        else if (CheckValidTarget(selectedSpellTrap))
+                        else if (selectedSpellTrap.targetZone == Zone.Field)
                         {
-                            engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player"));
-                            engine.InitiateSelectTarget(selectedSpellTrap);
+                            if (CheckValidTarget(selectedSpellTrap))
+                            {
+                                engine.MoveCard(selectedSpellTrap, Zone.Field, set, tag == "Player");
+                                engine.InitiateSelectTarget(selectedSpellTrap);
+                            }
+                        }
+                        else if (selectedSpellTrap.targetZone == Zone.Graveyard)
+                        {
+                            bool activate = false;
+                            foreach (Graveyard graveyard in FindObjectsOfType<Graveyard>())
+                            {
+                                if (selectedSpellTrap.cantTargetPlayerCards && graveyard.tag == "Player") continue;
+                                else if (selectedSpellTrap.cantTargetOpponentCards && graveyard.tag == "Opponent") continue;
+
+                                if (graveyard.CheckValidTarget(selectedSpellTrap)) //check if card can target both players, then show both graveyards
+                                {
+                                    activate = true;
+                                    graveyard.ManualTrigger(true, (!selectedSpellTrap.cantTargetOpponentCards && !selectedSpellTrap.cantTargetPlayerCards));
+                                }
+                            }
+                            if (activate)
+                            {
+                                engine.MoveCard(selectedSpellTrap, Zone.Field, set, tag == "Player");
+                                engine.InitiateSelectTarget(selectedSpellTrap);
+                            }
                         }
                     }
-                    else engine.MoveCard(selectedSpellTrap, Zone.Field, set, (tag == "Player")); //set spell/trap card
+                    else engine.MoveCard(selectedSpellTrap, Zone.Field, set, tag == "Player"); //set spell/trap card
 
                     return;
                 }
@@ -88,15 +110,22 @@ public class Hand : Collection, IPointerClickHandler
 
     public bool CheckValidTarget(SpellTrap card)
     {
-        bool targetAvailable = false;
-        foreach (Slot slots in field.monsterSlots)
+        foreach (Field field in FindObjectsOfType<Field>())
         {
-            if (!slots.container) continue;
-            Monster monster = slots.container.GetComponent<Monster>();
-            if (monster.type == card.requiredType) targetAvailable = true;
+            if (card.cantTargetPlayerCards && field.tag == "Player") continue;
+            else if (card.cantTargetOpponentCards && field.tag == "Opponent") continue;
+
+            foreach (Slot slots in field.monsterSlots)
+            {
+                if (!slots.container) continue;
+                Monster monster = slots.container.GetComponent<Monster>();
+                if (monster.type == card.requiredType) return true;
+                else if (card.effectType == EffectType.ChangePosition && monster.isAttackPosition == card.requiresAtkPos) return true;
+            }
         }
 
-        if (!targetAvailable) { engine.AlertText("No valid target", true); engine.PlaySound("cant"); }
-        return targetAvailable;
+        engine.AlertText("No valid target", true);
+        engine.PlaySound("cant");
+        return false;
     }
 }

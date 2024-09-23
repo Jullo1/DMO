@@ -28,10 +28,28 @@ public class Slot : MonoBehaviour
                 spellTrap.ToggleFaceUp(true);
                 spellTrap.TriggerEffects(true);
             }
-            else if (field.CheckValidTarget(spellTrap))
+            else if (spellTrap.targetZone == Zone.Field)
             {
-                spellTrap.ToggleFaceUp(true);
-                engine.InitiateSelectTarget(spellTrap);
+                if (field.CheckValidTarget(spellTrap))
+                {
+                    spellTrap.ToggleFaceUp(true);
+                    engine.InitiateSelectTarget(spellTrap);
+                }
+            }
+            else if (spellTrap.targetZone == Zone.Graveyard)
+            {
+                foreach (Graveyard graveyard in FindObjectsOfType<Graveyard>())
+                {
+                    if (spellTrap.cantTargetPlayerCards && graveyard.tag == "Player") continue;
+                    else if (spellTrap.cantTargetOpponentCards && graveyard.tag == "Opponent") continue;
+
+                    if (graveyard.CheckValidTarget(spellTrap))
+                    {
+                        spellTrap.ToggleFaceUp(true);
+                        graveyard.ManualTrigger(true, (!spellTrap.cantTargetOpponentCards && !spellTrap.cantTargetPlayerCards)); //if card can target both players, then trigger both graveyards
+                        engine.InitiateSelectTarget(spellTrap);
+                    }
+                }
             }
         }
 

@@ -162,15 +162,22 @@ public class Field : MonoBehaviour
 
     public bool CheckValidTarget(SpellTrap card)
     {
-        bool targetAvailable = false;
-        foreach (Slot slots in monsterSlots)
+        foreach (Field field in FindObjectsOfType<Field>())
         {
-            if (!slots.container) continue;
-            Monster monster = slots.container.GetComponent<Monster>();
-            if (monster.type == card.requiredType) targetAvailable = true;
+            if (card.cantTargetPlayerCards && field.tag == "Player") continue;
+            else if (card.cantTargetOpponentCards && field.tag == "Opponent") continue;
+
+            foreach (Slot slots in field.monsterSlots)
+            {
+                if (!slots.container) continue;
+                Monster monster = slots.container.GetComponent<Monster>();
+                if (monster.type == card.requiredType) return true;
+                else if (card.effectType == EffectType.ChangePosition && monster.isAttackPosition == card.requiresAtkPos) return true;
+            }
         }
 
-        if (!targetAvailable) { engine.AlertText("No valid target", true); engine.PlaySound("cant"); }
-        return targetAvailable;
+        engine.AlertText("No valid target", true);
+        engine.PlaySound("cant");
+        return false;
     }
 }

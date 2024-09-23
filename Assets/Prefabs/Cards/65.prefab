@@ -178,7 +178,14 @@ MonoBehaviour:
   spellType: 1
   trapType: 0
   requiredType: 20
-  targetType: 0
+  targetType: 5
+  targetZone: 4
+  endZone: 5
+  effectType: 4
+  requiresAtkPos: 0
+  cantTargetPlayerCards: 0
+  cantTargetOpponentCards: 0
+  turnsLeft: 0
   boostValue: 0000000000000000
 --- !u!82 &7228850284090336193
 AudioSource:

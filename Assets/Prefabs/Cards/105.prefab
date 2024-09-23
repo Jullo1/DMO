@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6635887058182185454
 RectTransform:
   m_ObjectHideFlags: 0
@@ -172,7 +172,7 @@ MonoBehaviour:
   isFaceUp: 0
   cardBack: {fileID: 4297943177549355468}
   fullCardText: 
-  index: -1
+  index: -2
   atk: 1550
   def: 1200
   level: 4
