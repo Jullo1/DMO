@@ -119,7 +119,7 @@ public class Hand : Collection, IPointerClickHandler
             {
                 if (!slots.container) continue;
                 Monster monster = slots.container.GetComponent<Monster>();
-                if (monster.type == card.requiredType) return true;
+                if (monster.type == card.requiredType && monster.isFaceUp) return true;
                 else if (card.effectType == EffectType.ChangePosition && monster.isAttackPosition == card.requiresAtkPos) return true;
             }
         }

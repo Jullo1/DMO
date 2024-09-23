@@ -14,16 +14,22 @@ Features
 -Polymerization (Card 59)
 
 Bugs
+-Lock activation for cards that dont require a specific target (for example fissure/raigeki)
 -Fissure targeting face down cards
--Lock phase and hand controls when using a card that requires a target
+-Monster Reborn is able to activate when the field is full
+-Monster Reborn is making cards in graveyard spread double the amount
+-Should lock phase and hand controls when using a card that requires a target
 -If drawing a card while mouse is over hand, all cards in hand are moved up
 -AI not properly playing some cards
 -AI skipping player's draw phase and playing the cancel sound
--AI sometimes tribute summoning without tributes
+-AI sometimes tribute summoning level 7 or higher monsters with 1 tribute (but only when it has 2 monsters available)
 
 
 Functionality
--Make spell/traps that increase/lower lp stay in the field until the lp change is made
+-Monster Reborn should be able to special summon in defence position
+-Monster Reborn should only show monster cards in graveyard
+-Graveyard preview making cards go out of screen when there are too many cards
+-Make spell/traps that increase/lower LP stay in the field until the lp change is made
 -Battle Phase and Main Phase 2 should be skipped if no attacking monsters or first turn (next phase button shows end turn instead)
 -Right click in the turn button ends the turn
 -Show attack and defence info in a different box than the card text

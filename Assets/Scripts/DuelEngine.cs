@@ -840,7 +840,7 @@ public class DuelEngine : MonoBehaviour
                 }
                 else
                 {
-                    if (monster.type == spellTrap.requiredType)
+                    if (monster.type == spellTrap.requiredType && monster.isFaceUp)
                     {
                         spellTrap.target = target;
                         if (spellTrap.spellType == SpellType.Equip) monster.equips.Add(spellTrap);
