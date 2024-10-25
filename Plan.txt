@@ -1,11 +1,12 @@
 Features
 -Field spells (Cards 46-51)
 
+-Background
 -Change phase/turn feedback
 -Attack animation
 -Activation/summon animation
 -Field spell reskins
--Backgrounds
+-Select opponent scene (with difficulty), reset takes you there. Add a select deck button (go there on game start).
 
 -Banish (Card 65)
 -Effect Monsters
@@ -14,6 +15,7 @@ Features
 -Polymerization (Card 59)
 
 Bugs
+-Tribute summon not working sometimes
 -Lock activation for cards that dont require a specific target (for example fissure/raigeki)
 -Fissure targeting face down cards
 -Monster Reborn is able to activate when the field is full
@@ -26,6 +28,7 @@ Bugs
 
 
 Functionality
+-Restore raycast padding to all cards that are not in hand or during graveyard list preview
 -Monster Reborn should be able to special summon in defence position
 -Monster Reborn should only show monster cards in graveyard
 -Graveyard preview making cards go out of screen when there are too many cards
@@ -36,6 +39,7 @@ Functionality
 -Also show attack and defence next to the card in the field
 -Show number of cards in deck on hover
 -Create card prefab to manually remove raycast from cardback, then remove the line in Card.cs where it sets the cardback raycast to disabled
+-Change GY to graveyard in all cards because GY sounds dumb
 
 
 Dev Tweaks

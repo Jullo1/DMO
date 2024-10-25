@@ -467,7 +467,7 @@ public class DuelEngine : MonoBehaviour
         {
             case Phase.Draw:
                 AlertText("Draw a card");
-                if (playerTurn && player.targetLp < 4000 && player.targetLp > 0) game.ChangeBackgroundMusic(1); //losing music
+                if ((player.targetLp < 4000 && player.targetLp > 0) || (opponent.targetLp < 4000 && opponent.targetLp > 0)) game.ChangeBackgroundMusic(1); //losing music
                 //else if (playerTurn && opponent.targetLp < 4000 && opponent.targetLp > 0) game.ChangeBackgroundMusic(2); //winning music
                 break;
             case Phase.Standby:
